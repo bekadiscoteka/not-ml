@@ -53,3 +53,31 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+bin/
+out
+*.exe
+*.o
+*.d
+# Vim swap files
+*.swp
+*.swo
+*.swn
+*.sw?
+.*.swp
+
+# Vim backup files
+*~
+*.bak
+*.old
+*.orig
+
+# Vim undo files
+*.un~
+*.undo
+
+# Vim session / netrw history
+Session.vim
+Session.vim?
+.netrwhist
+.vimtmp
