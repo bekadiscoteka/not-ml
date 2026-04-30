@@ -62,10 +62,10 @@
 <ref refid="a17d6036-446e-11f1-8a67-50ebf6e4fe33"/>
 <ref refid="af8aa620-446e-11f1-99dc-50ebf6e4fe33"/>
 <ref refid="17dba839-446f-11f1-abc1-50ebf6e4fe33"/>
-<ref refid="3dfe8baa-446f-11f1-9e94-50ebf6e4fe33"/>
 <ref refid="bdc99ab4-447c-11f1-85a6-50ebf6e4fe33"/>
 <ref refid="d57bf3b5-447c-11f1-a594-50ebf6e4fe33"/>
 <ref refid="0d43963a-447d-11f1-a10a-50ebf6e4fe33"/>
+<ref refid="8c16d583-4485-11f1-ac4c-50ebf6e4fe33"/>
 </reflist>
 </edge>
 <name>
@@ -124,11 +124,11 @@
 <ref refid="130feda7-446f-11f1-982f-50ebf6e4fe33"/>
 <ref refid="a0d678bd-446e-11f1-bbaf-50ebf6e4fe33"/>
 <ref refid="ae420b31-446e-11f1-a45a-50ebf6e4fe33"/>
-<ref refid="26dd1630-446f-11f1-b90b-50ebf6e4fe33"/>
 <ref refid="7bfbcd21-446e-11f1-a9b3-50ebf6e4fe33"/>
 <ref refid="eebe5568-447c-11f1-8d1c-50ebf6e4fe33"/>
 <ref refid="06c7fa2a-41ad-11f1-8856-50ebf6e4fe33"/>
 <ref refid="d4b051d3-447c-11f1-a7d1-50ebf6e4fe33"/>
+<ref refid="26dd1630-446f-11f1-b90b-50ebf6e4fe33"/>
 </reflist>
 </ownedPresentation>
 </SysML:ActivityDiagram>
@@ -1652,7 +1652,7 @@
 </SysML:ActivityDiagram>
 <UML:DiagramItem id="8ae186bb-446d-11f1-aa5e-50ebf6e4fe33">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 34.99999999999999, -5.277347296509333)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 33.751943234591415, -5.277347296509333)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -1872,7 +1872,7 @@
 </UML:ActionItem>
 <UML:DiagramItem id="743d7a92-446e-11f1-bf93-50ebf6e4fe33">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 36.73006584904982, 23.544914005801047)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 36.59308924598015, 23.544914005800916)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -2090,7 +2090,7 @@
 <outgoing>
 <reflist>
 <ref refid="17dba839-446f-11f1-abc1-50ebf6e4fe33"/>
-<ref refid="3dfe8baa-446f-11f1-9e94-50ebf6e4fe33"/>
+<ref refid="8c16d583-4485-11f1-ac4c-50ebf6e4fe33"/>
 </reflist>
 </outgoing>
 <presentation>
@@ -2101,7 +2101,7 @@
 </UML:DecisionNode>
 <UML:DecisionNodeItem id="0b44a119-446f-11f1-82b6-50ebf6e4fe33">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 522.8648876760146, -6.01529913261765)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 522.8648876760146, -8.470482054502195)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -2142,7 +2142,7 @@
 <val>(1.0, 0.0, 0.0, 1.0, 529.102524094048, 24.12219079480798)</val>
 </matrix>
 <points>
-<val>[(-6.237636418033446, -12.59267284931019), (-6.237636418033446, 40.49725208997785), (-68.63076666494112, 40.49725208997785), (-68.63076666494112, -26.702122753664412), (-133.9794910409147, -26.702122753664412), (-133.9794910409147, -26.702122753664412)]</val>
+<val>[(-6.237636418033276, -15.047855771194733), (-6.237636418033276, 40.49725208997785), (-68.63076666494112, 40.49725208997785), (-68.63076666494112, -26.702122753664412), (-133.9794910409147, -26.702122753664412), (-133.9794910409147, -26.702122753664412)]</val>
 </points>
 <head-connection>
 <ref refid="0b44a119-446f-11f1-82b6-50ebf6e4fe33"/>
@@ -2203,42 +2203,13 @@
 <val>true</val>
 </value>
 </UML:LiteralString>
-<UML:ControlFlowItem id="26dd1630-446f-11f1-b90b-50ebf6e4fe33">
-<diagram>
-<ref refid="fdaedcee-41a8-11f1-aa35-50ebf6e4fe33"/>
-</diagram>
-<horizontal>
-<val>False</val>
-</horizontal>
-<orthogonal>
-<val>1</val>
-</orthogonal>
-<parent>
-<ref refid="fdb006a6-41a8-11f1-96ac-50ebf6e4fe33"/>
-</parent>
-<subject>
-<ref refid="3dfe8baa-446f-11f1-9e94-50ebf6e4fe33"/>
-</subject>
-<matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 544.9443143169702, 6.228056150398918)</val>
-</matrix>
-<points>
-<val>[(-2.079426640955603, 5.684341886080802e-14), (-2.079426640955603, -6.592575921624302), (59.333183294618834, -6.592575921624302), (59.333183294618834, 81.9573837880776), (93.23785946297266, 81.9573837880776)]</val>
-</points>
-<head-connection>
-<ref refid="0b44a119-446f-11f1-82b6-50ebf6e4fe33"/>
-</head-connection>
-<tail-connection>
-<ref refid="2bc32cfb-446f-11f1-bb65-50ebf6e4fe33"/>
-</tail-connection>
-</UML:ControlFlowItem>
 <UML:Action id="2bc27d10-446f-11f1-981e-50ebf6e4fe33">
 <activity>
 <ref refid="fdacc347-41a8-11f1-8a3d-50ebf6e4fe33"/>
 </activity>
 <incoming>
 <reflist>
-<ref refid="3dfe8baa-446f-11f1-9e94-50ebf6e4fe33"/>
+<ref refid="8c16d583-4485-11f1-ac4c-50ebf6e4fe33"/>
 </reflist>
 </incoming>
 <name>
@@ -2273,22 +2244,6 @@
 <ref refid="2bc27d10-446f-11f1-981e-50ebf6e4fe33"/>
 </subject>
 </UML:ActionItem>
-<UML:ControlFlow id="3dfe8baa-446f-11f1-9e94-50ebf6e4fe33">
-<activity>
-<ref refid="fdacc347-41a8-11f1-8a3d-50ebf6e4fe33"/>
-</activity>
-<presentation>
-<reflist>
-<ref refid="26dd1630-446f-11f1-b90b-50ebf6e4fe33"/>
-</reflist>
-</presentation>
-<source>
-<ref refid="0b444935-446f-11f1-ac61-50ebf6e4fe33"/>
-</source>
-<target>
-<ref refid="2bc27d10-446f-11f1-981e-50ebf6e4fe33"/>
-</target>
-</UML:ControlFlow>
 <UML:Action id="89488a16-446f-11f1-88cf-50ebf6e4fe33">
 <activity>
 <ref refid="b410d7bf-4260-11f1-b14c-50ebf6e4fe33"/>
@@ -3686,6 +3641,7 @@ layer; neuron; weight
 <ref refid="eeb2be74-4472-11f1-acec-50ebf6e4fe33"/>
 <ref refid="000dc70b-4473-11f1-be41-50ebf6e4fe33"/>
 <ref refid="02c9dace-4473-11f1-8d76-50ebf6e4fe33"/>
+<ref refid="94fffe4a-4488-11f1-a48e-50ebf6e4fe33"/>
 <ref refid="1675bc20-4473-11f1-a309-50ebf6e4fe33"/>
 <ref refid="00e34e79-4477-11f1-a570-50ebf6e4fe33"/>
 <ref refid="599af22e-4473-11f1-837a-50ebf6e4fe33"/>
@@ -3813,7 +3769,7 @@ layer; neuron; weight
 </reflist>
 </incoming>
 <name>
-<val>forward given NN </val>
+<val></val>
 </name>
 <note>
 <val>feed NN with inputs from dataset
@@ -3824,6 +3780,11 @@ layer; neuron; weight
 <ref refid="75e5da2d-4473-11f1-97db-50ebf6e4fe33"/>
 </reflist>
 </outgoing>
+<ownedDiagram>
+<reflist>
+<ref refid="fd309b76-447a-11f1-a8b0-50ebf6e4fe33"/>
+</reflist>
+</ownedDiagram>
 <presentation>
 <reflist>
 <ref refid="02c9dace-4473-11f1-8d76-50ebf6e4fe33"/>
@@ -3838,11 +3799,16 @@ layer; neuron; weight
 <val>(-1.0, 0.0)</val>
 </top-left>
 <width>
-<val>101.0</val>
+<val>107.67682926829264</val>
 </width>
 <height>
-<val>44.0</val>
+<val>97.44987691881767</val>
 </height>
+<children>
+<reflist>
+<ref refid="94fffe4a-4488-11f1-a48e-50ebf6e4fe33"/>
+</reflist>
+</children>
 <diagram>
 <ref refid="eeb15a8c-4472-11f1-88e0-50ebf6e4fe33"/>
 </diagram>
@@ -3976,7 +3942,7 @@ layer; neuron; weight
 <val>(1.0, 0.0, 0.0, 1.0, 415.3536585365854, 219.89975383763544)</val>
 </matrix>
 <points>
-<val>[(7.058823529411768, 52.100246162364556), (0.8231707317073074, 75.55012308118228)]</val>
+<val>[(7.058823529411768, 52.100246162364556), (4.161585365853625, 75.55012308118228)]</val>
 </points>
 <head-connection>
 <ref refid="1675bc20-4473-11f1-a309-50ebf6e4fe33"/>
@@ -4073,7 +4039,7 @@ layer; neuron; weight
 </UML:ObjectNode>
 <UML:ObjectNodeItem id="706c0ab7-4473-11f1-84ec-50ebf6e4fe33">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 414.1568292682927, 370.8997538376355)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 397.35365853658544, 414.6002461623646)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -4114,7 +4080,7 @@ layer; neuron; weight
 <val>(1.0, 0.0, 0.0, 1.0, 413.3536585365854, 324.89975383763544)</val>
 </matrix>
 <points>
-<val>[(0.8031707317073256, 14.550123081182278), (32.865670731707326, 46.0)]</val>
+<val>[(4.008048780487798, 67.99999999999994), (16.062500000000057, 89.70049232472917)]</val>
 </points>
 <head-connection>
 <ref refid="02c9dace-4473-11f1-8d76-50ebf6e4fe33"/>
@@ -4250,7 +4216,7 @@ layer; neuron; weight
 <val>(1.0, 0.0, 0.0, 1.0, 451.3536585365854, 401.5)</val>
 </matrix>
 <points>
-<val>[(4.803170731707326, 13.399753837635444), (51.0, 61.399753837635444)]</val>
+<val>[(-11.999999999999943, 57.10024616236461), (51.0, 61.399753837635444)]</val>
 </points>
 <head-connection>
 <ref refid="706c0ab7-4473-11f1-84ec-50ebf6e4fe33"/>
@@ -5628,7 +5594,7 @@ layer; neuron; weight
 </UML:DiagramItem>
 <UML:DiagramItem id="3e13166c-4477-11f1-aca8-50ebf6e4fe33">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 31.5, -8.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 28.450487804878037, -7.949876918817722)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -6592,11 +6558,6 @@ layer; neuron; weight
 <ref refid="ec21b4a5-447e-11f1-86ab-50ebf6e4fe33"/>
 </reflist>
 </node>
-<ownedDiagram>
-<reflist>
-<ref refid="fd309b76-447a-11f1-a8b0-50ebf6e4fe33"/>
-</reflist>
-</ownedDiagram>
 <owningPackage>
 <ref refid="fa761f18-447a-11f1-85b3-50ebf6e4fe33"/>
 </owningPackage>
@@ -6611,7 +6572,7 @@ layer; neuron; weight
 </UML:Activity>
 <SysML:ActivityDiagram id="fd309b76-447a-11f1-a8b0-50ebf6e4fe33">
 <element>
-<ref refid="fd2e4ec3-447a-11f1-81f0-50ebf6e4fe33"/>
+<ref refid="02c9152b-4473-11f1-abce-50ebf6e4fe33"/>
 </element>
 <name>
 <val>forward</val>
@@ -6640,6 +6601,11 @@ layer; neuron; weight
 <ref refid="f90439c5-447e-11f1-ae65-50ebf6e4fe33"/>
 </reflist>
 </ownedPresentation>
+<presentation>
+<reflist>
+<ref refid="94fffe4a-4488-11f1-a48e-50ebf6e4fe33"/>
+</reflist>
+</presentation>
 </SysML:ActivityDiagram>
 <SysML:DiagramFrameItem id="fd31b6da-447a-11f1-90d8-50ebf6e4fe33">
 <matrix>
@@ -7324,7 +7290,7 @@ layer; neuron; weight
 <val>(1.0, 0.0, 0.0, 1.0, 310.0161797046128, 188.8685198586758)</val>
 </matrix>
 <points>
-<val>[(9.82431951660547, 111.15201370033401), (222.84870797140195, 111.15201370033401), (222.848707971402, -164.88381899129348)]</val>
+<val>[(9.82431951660547, 111.15201370033401), (222.84870797140195, 111.15201370033401), (222.84870797140206, -167.33900191317798)]</val>
 </points>
 <head-connection>
 <ref refid="8f3078af-446e-11f1-99af-50ebf6e4fe33"/>
@@ -7374,7 +7340,7 @@ layer; neuron; weight
 </UML:Action>
 <UML:ActionItem id="7310b2b3-447d-11f1-bbc2-50ebf6e4fe33">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 425.8073974491118, 326.9279695343544)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 425.8073974491118, 340.26098343755956)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -7421,7 +7387,7 @@ layer; neuron; weight
 </UML:DecisionNode>
 <UML:DecisionNodeItem id="abd80c5f-447d-11f1-a9c9-50ebf6e4fe33">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 453.33181799442616, 399.33460219311286)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 445.51101116064234, 417.52398978703195)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -7508,7 +7474,7 @@ layer; neuron; weight
 <val>(1.0, 0.0, 0.0, 1.0, 464.83181799442616, 318.672763283812)</val>
 </matrix>
 <points>
-<val>[(3.975579454685544, 52.255206250542415), (-3.0, 80.66183890930091)]</val>
+<val>[(3.975579454685544, 65.5882201537475), (-10.82080683378382, 98.85122650321995)]</val>
 </points>
 <head-connection>
 <ref refid="7310b2b3-447d-11f1-bbc2-50ebf6e4fe33"/>
@@ -7553,7 +7519,7 @@ layer; neuron; weight
 <val>(1.0, 0.0, 0.0, 1.0, 403.8318179944262, 422.672763283812)</val>
 </matrix>
 <points>
-<val>[(49.5, -3.251371149358704), (49.5, 10.296003171931886), (-44.853620085412075, 10.296003171931886), (-44.853620085412075, -217.99999999999997), (17.999999999999943, -218.0), (17.999999999999943, -210.72924197894272)]</val>
+<val>[(41.67919316621612, 14.938016444560333), (41.67919316621612, 10.296003171931886), (-44.853620085412075, 10.296003171931886), (-44.853620085412075, -217.99999999999997), (17.999999999999943, -218.0), (17.999999999999943, -210.72924197894272)]</val>
 </points>
 <head-connection>
 <ref refid="abd80c5f-447d-11f1-a9c9-50ebf6e4fe33"/>
@@ -7634,7 +7600,7 @@ layer; neuron; weight
 <val>(1.0, 0.0, 0.0, 1.0, 497.240026744422, 421.2279866151003)</val>
 </matrix>
 <points>
-<val>[(-23.908208749995936, -7.338161090699089), (-23.908208749995936, -11.289478601075615), (11.694814768735398, -11.289478601075615), (11.694814768735398, 146.98028405457114)]</val>
+<val>[(-31.729015583779642, 10.85122650321972), (-31.729015583779642, -11.289478601075615), (11.694814768735398, -11.289478601075615), (11.694814768735398, 146.98028405457114)]</val>
 </points>
 <head-connection>
 <ref refid="abd80c5f-447d-11f1-a9c9-50ebf6e4fe33"/>
@@ -7986,7 +7952,7 @@ layer; neuron; weight
 <val>(1.0, 0.0, 0.0, 1.0, 464.79955644999853, 234.1064594906332)</val>
 </matrix>
 <points>
-<val>[(0.0, 5.201682803707456), (0.0, 35.59618982946)]</val>
+<val>[(0.0, 5.201682803707456), (0.0, 46.87797082447969)]</val>
 </points>
 <head-connection>
 <ref refid="035164ba-447b-11f1-8b33-50ebf6e4fe33"/>
@@ -8120,7 +8086,7 @@ layer; neuron; weight
 </UML:Action>
 <UML:ActionItem id="ec21fe95-447e-11f1-8236-50ebf6e4fe33">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 428.8073974491118, 269.7026493200932)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 428.80739744911193, 280.9844303151129)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -8174,7 +8140,7 @@ layer; neuron; weight
 <val>(1.0, 0.0, 0.0, 1.0, 475.3286888101822, 296.3686771265034)</val>
 </matrix>
 <points>
-<val>[(0.0, 3.333972193589773), (-3.0000000000001137, 30.55929240785099)]</val>
+<val>[(0.0, 14.61575318860946), (-3.0000000000001137, 43.892306311056075)]</val>
 </points>
 <head-connection>
 <ref refid="ec21fe95-447e-11f1-8236-50ebf6e4fe33"/>
@@ -9543,5 +9509,73 @@ layer; neuron; weight
 <ref refid="1412e9ee-4481-11f1-b687-50ebf6e4fe33"/>
 </target>
 </UML:ControlFlow>
+<UML:ControlFlowItem id="26dd1630-446f-11f1-b90b-50ebf6e4fe33">
+<diagram>
+<ref refid="fdaedcee-41a8-11f1-aa35-50ebf6e4fe33"/>
+</diagram>
+<horizontal>
+<val>False</val>
+</horizontal>
+<orthogonal>
+<val>1</val>
+</orthogonal>
+<parent>
+<ref refid="fdb006a6-41a8-11f1-96ac-50ebf6e4fe33"/>
+</parent>
+<subject>
+<ref refid="8c16d583-4485-11f1-ac4c-50ebf6e4fe33"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 544.9443143169702, 6.228056150398918)</val>
+</matrix>
+<points>
+<val>[(-12.079426640955376, -14.698538204901112), (-12.079426640955376, -6.592575921624302), (59.333183294618834, -6.592575921624302), (59.333183294618834, 81.9573837880776), (93.23785946297266, 81.9573837880776)]</val>
+</points>
+<head-connection>
+<ref refid="0b44a119-446f-11f1-82b6-50ebf6e4fe33"/>
+</head-connection>
+<tail-connection>
+<ref refid="2bc32cfb-446f-11f1-bb65-50ebf6e4fe33"/>
+</tail-connection>
+</UML:ControlFlowItem>
+<UML:ControlFlow id="8c16d583-4485-11f1-ac4c-50ebf6e4fe33">
+<activity>
+<ref refid="fdacc347-41a8-11f1-8a3d-50ebf6e4fe33"/>
+</activity>
+<presentation>
+<reflist>
+<ref refid="26dd1630-446f-11f1-b90b-50ebf6e4fe33"/>
+</reflist>
+</presentation>
+<source>
+<ref refid="0b444935-446f-11f1-ac61-50ebf6e4fe33"/>
+</source>
+<target>
+<ref refid="2bc27d10-446f-11f1-981e-50ebf6e4fe33"/>
+</target>
+</UML:ControlFlow>
+<UML:DiagramItem id="94fffe4a-4488-11f1-a48e-50ebf6e4fe33">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 38.676829268292664, 18.724938459408808)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>30.0</val>
+</width>
+<height>
+<val>30.0</val>
+</height>
+<diagram>
+<ref refid="eeb15a8c-4472-11f1-88e0-50ebf6e4fe33"/>
+</diagram>
+<parent>
+<ref refid="02c9dace-4473-11f1-8d76-50ebf6e4fe33"/>
+</parent>
+<subject>
+<ref refid="fd309b76-447a-11f1-a8b0-50ebf6e4fe33"/>
+</subject>
+</UML:DiagramItem>
 </model>
 </gaphor>
