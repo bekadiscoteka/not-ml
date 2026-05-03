@@ -2,7 +2,6 @@
 #include <math.h>
 #include <NN.h>
 #include <stdlib.h>
-#define TARGET 3
 
 #define RANDF ( (float) ( rand() / ((float) RAND_MAX) ) ) 
 
@@ -71,44 +70,20 @@ float *forward(float output[], const NN *nn, float input[], size_t inputsize) {
 	return output; 
 }
 
-float MSE(const NN *nn, const float dataset[][3], size_t datasize) {
+float MSE(const NN *nn, Dataset *ds) {
 	float mse = 0;
-	for (size_t i=0; i<datasize; ++i) {
+	size_t TARGET = ds->target;
+	for (size_t i=0; i<ds->datasize; ++i) {
 		float output[3];
-		float err = dataset[i][TARGET] - (forward(output, nn, dataset[i], 2))[0];
+		float err = ds->dataset[(i * (ds->feature_size + 1)) + TARGET]	- (forward(output, nn, ds->dataset + (i * (ds->feature_size + 1)), 2))[0];
 		mse += err * err;
 	}
 	return mse;
 }	
 
+	
 
-/*void train(float *dataset[], size_t datasize, NN *orig, float eps, float lr, int epoch) {
-	NN step, clone;
-
-	for (int e=0; e < epoch; ++e) { 
-		clone = step = *orig;
-		for (int i=0; i < orig->LAYER_N; i++) {
-			for (int j=0; j < orig->layers[i].NEURON_N; j++) {
-				for (int k=0; k < orig->layers[i].neurons[j].WEIGHT_N; k++) {
-					step.layers[i].neurons[j].weights[k] += eps;
-					float diff = MSE(&orig, dataset, datasize) - MSE(&step, dataset, datasize); 
-					step.layers[i].neurons[j].weights[k] -= eps;
-
-					clone.layers[i].neurons[j].weights[k] -= lr * (diff / eps);
-				}
-
-				step.layers[i].neurons[j].bias += eps;
-				float diff = MSE(&orig, dataset, datasize) - MSE(&step, dataset, datasize); 
-				step.layers[i].neurons[j].bias -= eps;
-				clone.layers[i].neurons[j].bias -= lr * (diff / eps);
-			}
-		}	
-		*orig = clone;
-	}
-
-}*/	
-
-void train(float dataset[][3], size_t datasize, NN *orig, float eps, float lr, unsigned int epoch) {
+void train(Dataset *ds, NN *orig, float eps, float lr, unsigned int epoch) {
 	NN step, clone;
 	step = clone = *orig;
 	for (unsigned int e=0; e < epoch; ++e) {
@@ -120,23 +95,23 @@ void train(float dataset[][3], size_t datasize, NN *orig, float eps, float lr, u
 				Neuron *n = l->neurons + j;
 				
 				for (int k=0; k < n->WEIGHT_N; k++) {
-					float mse_orig = MSE(orig, dataset, datasize);
+					float mse_orig = MSE(orig, ds);
 					n->weights[k] += eps;
-					float mse_eps = MSE(orig, dataset, datasize);
+					float mse_eps = MSE(orig, ds);
 					n->weights[k] -= eps;
 					float grad = ( mse_orig - mse_eps ) / eps;
 					clone.layers[i].neurons[j].weights[k] += lr * grad;
 				}
 				
-				float mse_orig = MSE(orig, dataset, datasize);
+				float mse_orig = MSE(orig, ds);
 				n->bias += eps;
-				float mse_eps = MSE(orig, dataset, datasize);
+				float mse_eps = MSE(orig, ds);
 				n->bias -= eps;
 				float grad = ( mse_orig - mse_eps ) / eps;
 				clone.layers[i].neurons[j].bias += lr * grad;
 			}
 		}
-		printf("epoch = %d, MSE: %f\n", e, MSE(orig, dataset, datasize));
+		//printf("epoch = %d, MSE: %f\n", e, MSE(orig, ds));
 		*orig = clone;
 	}
 }
