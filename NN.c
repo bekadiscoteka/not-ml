@@ -51,7 +51,8 @@ void farrncpy(float t[], float s[], size_t n) {
 
 
 float *forward(float output[], const NN *nn, float input[], size_t inputsize) {
-	float next_layer_input[inputsize];
+	float next_layer_input[MAXNEURON_N], current_layer_input[MAXNEURON_N];
+	farrncpy(current_layer_input, input, inputsize);
 	for (int i=0; i<nn->LAYER_N; i++) {
 		Layer *l = nn->layers + i;
 		for (int j=0; j<l->NEURON_N; j++) {
@@ -59,14 +60,14 @@ float *forward(float output[], const NN *nn, float input[], size_t inputsize) {
 			float result = 0;
 
 			for (int k=0; k<n->WEIGHT_N; k++) 
-				result += n->weights[k] * input[k];	
+				result += n->weights[k] * current_layer_input[k];	
 
 			result += n->bias;
 			next_layer_input[j] = (*nn->actFunc)(result);
 		}
-		farrncpy(input, next_layer_input, inputsize);
+		farrncpy(current_layer_input, next_layer_input, l->NEURON_N);
 	}
-	farrncpy(output, input, inputsize);
+	farrncpy(output, current_layer_input, (nn->layers[nn->LAYER_N - 1]).NEURON_N);
 	return output; 
 }
 
