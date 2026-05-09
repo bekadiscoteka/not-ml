@@ -1,6 +1,7 @@
+FLAGS = -MMD -MP -Iinclude -lm
 bin/out: nomain.c | bin
 	@echo "Building the file ..."
-	@gcc $^ -Iinclude -o $@
+	@gcc $^ $(FLAGS) -o $@
 
 bin:
 	@echo "Creating bin directory ..."
@@ -16,5 +17,6 @@ run:
 	@echo "Running!"
 	@bin/out
 
+-include bin/out.d
 
 
