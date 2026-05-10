@@ -1,35 +1,52 @@
 #define MAT_IMPLEMENTATION
 #define NN_IMPLEMENTATION
 #include <NN.h>
+#include <time.h>
 
 #include <stdio.h>
+
+float dataset[] = {
+	 0, 0, 0 ,
+	 0, 1, 1 ,
+	 1, 0, 1 ,
+	 1, 1, 0 
+};
 
 
 
 int main(void) {
-	size_t s[] = { 2, 1};
-	NN nn = nn_alloc(s, sizeof(s)/sizeof(size_t), 2);
 
-	for (size_t i=0; i < nn.size; i++) {
-		mat_rand(nn.w[i], 1.0, 1.0);
-		mat_rand(nn.b[i], 1.0, 1.0);
-	}
+	srand(time(0));
 
-	nn_print(&nn, "nn");
-
-	Mat input = { 
-		.rows = 2, 
-		.cols = 2,
-		.stride = 2,
-		.p = (float[]) {1, 1, 2, 2}
+	Mat m_dataset = {
+		.rows = 4,
+		.cols = 3,
+		.stride = 3,
+		.p = dataset
 	};
 
-	nn.im = mat_share(input);
-	nn.om = mat_alloc(2, 1);
-	MAT_PRINT(input);
-	nn_forward(&nn);
+	Mat ti = mat_sharsub(m_dataset, 0, 4, 0, 2);
+	Mat to = mat_sharcol(m_dataset, 2);
 
-	MAT_PRINT(nn.om);
-	
+	NN nn = nn_alloc( (size_t[2]) { 2, 1 }, 2, 2 );
+	for (size_t i=0; i<nn.size; i++) {
+		mat_rand(nn.w[i], 0, 1);
+		mat_rand(nn.b[i], 0, 1);
+	}
+
+	printf("cost: %f\n", nn_cost(&nn, ti, to)); 
+
+	NN grad = nn_alloc( (size_t[2]) { 2, 1 }, 2, 2 );
+
+	for (int i=0; i<100; i++) {
+		nn_fdiff(&grad, &nn, 0.1f, ti, to);
+		nn_train(&nn, &grad, 0.1f);
+		
+		printf("cost: %f\n", nn_cost(&nn, ti, to)); 
+	}
+
+	printf("final cost: %f\n", nn_cost(&nn, ti, to)); 
+
 	return 0;
+
 }

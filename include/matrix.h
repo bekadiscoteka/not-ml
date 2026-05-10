@@ -38,9 +38,11 @@ Mat mat_cpy(Mat, Mat);
 	#define RANDF ( (float) rand() / (float) RAND_MAX )
 #endif
 
-#define MAT_IMM_ALLOC( r, c ) ( (Mat){.rows = r, .cols = c, .p = (float[(r)*(c)]){0} )
+#define MAT_ON_STACK( name, r, c )									\
+	float name##_buf[r*c];											\
+	Mat name = { .rows = r, .cols = c, .stride = c, .p = name##_buf }; \
 
-#define MAT_AT(m, r, c) ( (m).p[ ((m).stride * (r)) + (c) ] )
+#define MAT_AT(m, r, c) ( (m).p[ ((m).stride) * (r) + (c) ] )
 #define MAT_PRINT(m) mat_print(m, #m, 0)
 
 #endif
@@ -128,6 +130,20 @@ Mat mat_cpy(Mat, Mat);
 		return col;
 	}
 
+	Mat mat_sharsub(Mat m, size_t ri, size_t rsize, size_t ci, size_t csize) {
+		MAT_ASSERT( m.rows >= ri+rsize-1 );
+		MAT_ASSERT( m.cols >= ci+csize-1 );
+
+		Mat sm = { 
+			.rows = rsize,
+			.cols = csize,
+			.stride = m.stride,
+			.p = m.p + (ci * m.stride) + ri
+		};
+
+		return sm;
+	}
+
 	Mat mat_share(Mat src) {
 		Mat dst = {
 			.cols = src.cols, 
@@ -137,6 +153,8 @@ Mat mat_cpy(Mat, Mat);
 		};
 		return dst;
 	}
+
+
 
 	Mat mat_cpy(Mat dst, Mat src) {
 		MAT_ASSERT(dst.rows >= src.rows);

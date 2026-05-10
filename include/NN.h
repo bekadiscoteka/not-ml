@@ -20,6 +20,18 @@
 #define NN_ASSERT assert
 #endif
 
+#define NN_SETINPUT(nnp, x) {				\
+	NN_ASSERT( nnp->im.cols == (x).cols );	\
+	nnp->im = mat_share((x));				\
+}
+
+#define NN_SETOUTPUT(nnp, y) {;				\
+	NN_ASSERT( nnp->om.cols == (y).cols );	\
+	nnp->om = mat_share( (y) );				\
+}
+
+#define NN_PRINT(nn) nn_print(nn, #nn)
+
 
 typedef struct {
 	Mat im;
@@ -33,7 +45,7 @@ enum nn_alloc {RAND, ZERO};
 
 NN nn_alloc(size_t *arch, size_t size, size_t input_size);
 NN *nn_forward(NN *nn);
-float nn_cost(const NN *nn, const Mat ti, const Mat to);
+float nn_cost(NN *nn, const Mat ti, const Mat to);
 NN *nn_fdiff(NN* grad, NN *nn, float eps, const Mat ti, const Mat to);
 NN *nn_train(NN *nn, NN* grad, float lr);
 void nn_print(NN *nn, const char *name);
@@ -54,6 +66,7 @@ NN nn_alloc(size_t *arch, size_t arch_size, size_t input_size) {
 	NN_ASSERT( (nn.w = NN_CALLOC(arch_size, sizeof(Mat))) != NULL );
 	NN_ASSERT( (nn.b = NN_CALLOC(arch_size, sizeof(Mat))) != NULL );
 	
+	nn.im.cols = input_size;
 
 	for (size_t i = 0; i < arch_size; i++) {
 		nn.w[i] = mat_alloc( input_size, arch[i] );		
@@ -61,8 +74,9 @@ NN nn_alloc(size_t *arch, size_t arch_size, size_t input_size) {
 		input_size = arch[i]; 
 	}
 
+	nn.om.cols = input_size;
+
 	return nn;
-	
 }
 
 void nn_print(NN *nn, const char *name) {
@@ -79,6 +93,9 @@ void nn_print(NN *nn, const char *name) {
 
 
 NN *nn_forward(NN *nn) {
+	
+	NN_ASSERT( nn->im.rows == nn->om.rows );
+
 	Mat bufm = mat_alloc(32, 32);
 	bufm = mat_cpy(bufm, nn->im);	
 	for (size_t i=0; i < nn->size; i++) {
@@ -93,13 +110,10 @@ NN *nn_forward(NN *nn) {
 		
 		temp = mat_dot(temp, bufm, nn->w[i]);
 
-		MAT_PRINT(temp);
-
 		bufm.rows = temp.rows;
 		bufm.cols = temp.cols;
 
 		bufm = mat_brcst(bufm, temp, nn->b[i]);
-		MAT_PRINT(bufm);
 	}
 
 	nn->om = mat_cpy(nn->om, bufm);
@@ -107,8 +121,71 @@ NN *nn_forward(NN *nn) {
 }
 
 
+float nn_cost(NN *nn, const Mat ti, const Mat to) {
+	NN_ASSERT(ti.rows == to.rows);
+	
+	MAT_ON_STACK( out, to.rows, to.cols );
+	
+	NN_SETINPUT(nn, ti);
+	NN_SETOUTPUT(nn, out);
+	nn_forward(nn);
+
+	float sum_batch = 0;
+	for (size_t i=0; i < out.rows; i++) {
+		float sum_MSE_neuron = 0;
+		for (size_t j=0; j < out.cols; j++) {
+			float diff = MAT_AT(to, i, j) - MAT_AT(out, i, j);	
+			sum_MSE_neuron += diff * diff;	
+		}
+		sum_batch += sum_MSE_neuron / out.cols;
+	}
+
+	return (sum_batch /= out.rows);
+}
 
 
+NN *nn_fdiff(NN* grad, NN *nn, float eps, const Mat ti, const Mat to) {
+	NN_ASSERT( grad->size == nn->size );
+
+	for (size_t i=0; i<nn->size; i++) {
+		Mat *layer = nn->w + i;
+		Mat *grad_layer = grad->w + i;
+		for (size_t j=0; j < layer->rows; j++) {
+			for (size_t k=0; k < layer->cols; k++) {
+				float cost = nn_cost(nn, ti, to); 
+				MAT_AT(nn->w[i], j, k) += eps;	
+				float cost_eps = nn_cost(nn, ti, to);
+				MAT_AT(nn->w[i], j, k) -= eps;	
+
+				MAT_AT(grad->w[i], j, k) = (cost - cost_eps) / eps;	
+
+				cost = nn_cost(nn, ti, to); 
+				MAT_AT(nn->b[i], j, k) += eps;	
+				cost_eps = nn_cost(nn, ti, to);
+				MAT_AT(nn->b[i], j, k) -= eps;	
+
+				MAT_AT(grad->b[i], j, k) = (cost - cost_eps) / eps;	
+			}
+		}
+	}
+
+	return grad;
+}
+
+
+NN *nn_train(NN *nn, NN* grad, float lr) {
+	for (size_t i=0; i<nn->size; i++) {
+		Mat *layer = nn->w + i;
+		Mat *grad_layer = grad->w + i;
+		for (size_t j=0; j < layer->rows; j++) {
+			for (size_t k=0; k < layer->cols; k++) {
+				MAT_AT(nn->w[i], j, k) += lr * MAT_AT(grad->w[i], j, k);
+				MAT_AT(nn->b[i], j, k) += lr * MAT_AT(grad->b[i], j, k);
+			}
+		}
+	}
+	return nn;
+}
 
 #endif
 
