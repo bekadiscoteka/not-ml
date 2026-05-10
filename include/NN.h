@@ -32,6 +32,8 @@
 
 #define NN_PRINT(nn) nn_print(nn, #nn)
 
+#define SIGMOIDF(x) ( (float) ( exp(x) / (1 + exp(x))) )
+
 
 typedef struct {
 	Mat im;
@@ -49,8 +51,7 @@ float nn_cost(NN *nn, const Mat ti, const Mat to);
 NN *nn_fdiff(NN* grad, NN *nn, float eps, const Mat ti, const Mat to);
 NN *nn_train(NN *nn, NN* grad, float lr);
 void nn_print(NN *nn, const char *name);
-float sigmoidf(float);
-
+void mat_sigmoid(Mat m);
 
 
 #endif
@@ -92,6 +93,14 @@ void nn_print(NN *nn, const char *name) {
 }
 
 
+void mat_sigmoid(Mat m) {
+	for (size_t i=0; i < m.rows; i++) {
+		for (size_t j=0; j < m.cols; j++) {
+			MAT_AT(m, i, j) = SIGMOIDF( (MAT_AT(m, i, j) ) );
+		}
+	}
+}
+
 NN *nn_forward(NN *nn) {
 	
 	NN_ASSERT( nn->im.rows == nn->om.rows );
@@ -114,6 +123,8 @@ NN *nn_forward(NN *nn) {
 		bufm.cols = temp.cols;
 
 		bufm = mat_brcst(bufm, temp, nn->b[i]);
+
+		mat_sigmoid(bufm);
 	}
 
 	nn->om = mat_cpy(nn->om, bufm);
