@@ -21,13 +21,13 @@
 #endif
 
 #define NN_SETINPUT(nnp, x) {				\
-	NN_ASSERT( nnp->im.cols == (x).cols );	\
-	nnp->im = mat_share((x));				\
+	NN_ASSERT( (nnp)->im.cols == (x).cols );	\
+	(nnp)->im = mat_share((x));				\
 }
 
 #define NN_SETOUTPUT(nnp, y) {;				\
-	NN_ASSERT( nnp->om.cols == (y).cols );	\
-	nnp->om = mat_share( (y) );				\
+	NN_ASSERT( (nnp)->om.cols == (y).cols );	\
+	(nnp)->om = mat_share( (y) );				\
 }
 
 #define NN_PRINT(nn) nn_print(nn, #nn)
@@ -105,7 +105,7 @@ NN *nn_forward(NN *nn) {
 	
 	NN_ASSERT( nn->im.rows == nn->om.rows );
 
-	Mat bufm = mat_alloc(32, 32);
+	MAT_ON_STACK(bufm, 32, 32);
 	bufm = mat_cpy(bufm, nn->im);	
 	for (size_t i=0; i < nn->size; i++) {
 		float tempf[bufm.rows * ( nn->w[i].cols )];
@@ -157,26 +157,28 @@ float nn_cost(NN *nn, const Mat ti, const Mat to) {
 
 NN *nn_fdiff(NN* grad, NN *nn, float eps, const Mat ti, const Mat to) {
 	NN_ASSERT( grad->size == nn->size );
+	float cost = nn_cost(nn, ti, to); 
 
 	for (size_t i=0; i<nn->size; i++) {
 		Mat *layer = nn->w + i;
 		Mat *grad_layer = grad->w + i;
 		for (size_t j=0; j < layer->rows; j++) {
 			for (size_t k=0; k < layer->cols; k++) {
-				float cost = nn_cost(nn, ti, to); 
 				MAT_AT(nn->w[i], j, k) += eps;	
 				float cost_eps = nn_cost(nn, ti, to);
 				MAT_AT(nn->w[i], j, k) -= eps;	
 
-				MAT_AT(grad->w[i], j, k) = (cost - cost_eps) / eps;	
+				MAT_AT(grad->w[i], j, k) = (cost_eps - cost) / eps;	
 
-				cost = nn_cost(nn, ti, to); 
-				MAT_AT(nn->b[i], j, k) += eps;	
-				cost_eps = nn_cost(nn, ti, to);
-				MAT_AT(nn->b[i], j, k) -= eps;	
-
-				MAT_AT(grad->b[i], j, k) = (cost - cost_eps) / eps;	
 			}
+		}
+
+		for (size_t j=0; j < nn->b[i].cols; j++) {
+				MAT_AT(nn->b[i], 0, j) += eps;	
+				float cost_eps = nn_cost(nn, ti, to);
+				MAT_AT(nn->b[i], 0, j) -= eps;	
+
+				MAT_AT(grad->b[i], 0, j) = (cost_eps - cost) / eps;	
 		}
 	}
 
@@ -188,11 +190,14 @@ NN *nn_train(NN *nn, NN* grad, float lr) {
 	for (size_t i=0; i<nn->size; i++) {
 		Mat *layer = nn->w + i;
 		Mat *grad_layer = grad->w + i;
-		for (size_t j=0; j < layer->rows; j++) {
-			for (size_t k=0; k < layer->cols; k++) {
-				MAT_AT(nn->w[i], j, k) += lr * MAT_AT(grad->w[i], j, k);
-				MAT_AT(nn->b[i], j, k) += lr * MAT_AT(grad->b[i], j, k);
+		for (size_t j=0; j < grad->w[i].rows; j++) {
+			for (size_t k=0; k < grad->w[i].cols; k++) {
+				MAT_AT(nn->w[i], j, k) -= lr * MAT_AT(grad->w[i], j, k);
 			}
+		}
+
+		for (size_t j=0; j < grad->b[i].cols; j++) {
+			MAT_AT(nn->b[i], 0, j) -= lr * MAT_AT(grad->b[i], 0, j);
 		}
 	}
 	return nn;

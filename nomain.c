@@ -38,12 +38,27 @@ int main(void) {
 
 	NN grad = nn_alloc( (size_t[2]) { 2, 1 }, 2, 2 );
 
-	for (int i=0; i<100*1000; i++) {
+	for (int i=0; i<100*100; i++) {
 		nn_fdiff(&grad, &nn, 0.1f, ti, to);
 		nn_train(&nn, &grad, 0.1f);
 		
 		//printf("cost: %f\n", nn_cost(&nn, ti, to)); 
 	}
+
+#if 1
+
+	for (size_t i=0; i < m_dataset.rows; i++) {
+		MAT_ON_STACK(input, 1, 2);
+		MAT_ON_STACK(output, 1, 1);
+		input.p[0] = MAT_AT(m_dataset, i, 0);
+		input.p[1] = MAT_AT(m_dataset, i, 1);
+		NN_SETINPUT(&nn, input); 
+		NN_SETOUTPUT(&nn, output);
+		nn_forward(&nn);
+		printf("%d ^ %d: %f\n", (int) MAT_AT(m_dataset, i, 0), (int) MAT_AT(m_dataset, i, 1), MAT_AT(nn.om, 0, 0));
+	}
+
+#endif
 
 	printf("final cost: %f\n", nn_cost(&nn, ti, to)); 
 
