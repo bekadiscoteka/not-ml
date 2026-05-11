@@ -1,10 +1,10 @@
 
 A tiny, single-header neural network framework in C. 
-- No dependencies, 
-- No batched backprop
-- No layer types (conv, attention, etc.)
-- No serialization
-- No GPU
+- no dependencies, 
+- no batched backprop
+- no layer types (conv, attention, etc.)
+- no serialization
+- no GPU acceleration 
 - no opinions,  
 - no job, 
 - no money, 
@@ -18,9 +18,15 @@ A tiny, single-header neural network framework in C.
 - no shame,
 - no mood,
 - no ai,
-- no hope in future,
+- no belief in future,
 - no cries
 - no motivation
+- no html,css
+- nocopyright 
+- no responsibility 
+- no arch linux
+- no one has been harmed while writing this code
+- no smoking
  —
 # not-ml
  
