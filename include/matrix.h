@@ -21,6 +21,9 @@ void mat_print(Mat, const char*, int);
 Mat mat_sharrow(Mat, size_t);
 Mat mat_sharcol(Mat, size_t);
 Mat mat_cpy(Mat, Mat);
+Mat mat_share(Mat src);
+Mat mat_sharsub(Mat m, size_t ri, size_t rsize, size_t ci, size_t csize);
+Mat mat_brcst(Mat out, Mat x, Mat b);
 
 #ifndef MAT_ASSERT
 	#define MAT_ASSERT assert

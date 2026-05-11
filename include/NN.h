@@ -52,6 +52,7 @@ NN *nn_fdiff(NN* grad, NN *nn, float eps, const Mat ti, const Mat to);
 NN *nn_train(NN *nn, NN* grad, float lr);
 void nn_print(NN *nn, const char *name);
 void mat_sigmoid(Mat m);
+NN *nn_rand(NN* nn);
 
 
 #endif
@@ -77,6 +78,14 @@ NN nn_alloc(size_t *arch, size_t arch_size, size_t input_size) {
 
 	nn.om.cols = input_size;
 
+	return nn;
+}
+
+NN *nn_rand(NN *nn) {
+	for (size_t i=0; i<nn->size; i++) {
+		mat_rand(nn->w[i], 0, 1);
+		mat_rand(nn->b[i], 0, 1);
+	}
 	return nn;
 }
 

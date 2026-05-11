@@ -29,17 +29,16 @@ int main(void) {
 	Mat to = mat_sharcol(m_dataset, 2);
 
 	NN nn = nn_alloc( (size_t[2]) { 2, 1 }, 2, 2 );
-	for (size_t i=0; i<nn.size; i++) {
-		mat_rand(nn.w[i], 0, 1);
-		mat_rand(nn.b[i], 0, 1);
-	}
+	nn_rand(&nn);
+
+	NN_PRINT(&nn);
 
 	printf("cost: %f\n", nn_cost(&nn, ti, to)); 
 
 	NN grad = nn_alloc( (size_t[2]) { 2, 1 }, 2, 2 );
 
 	for (int i=0; i<100*100; i++) {
-		nn_fdiff(&grad, &nn, 0.1f, ti, to);
+		nn_fdiff(&grad, &nn, 0.01f, ti, to);
 		nn_train(&nn, &grad, 0.1f);
 		
 		//printf("cost: %f\n", nn_cost(&nn, ti, to)); 
