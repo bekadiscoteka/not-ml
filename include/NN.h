@@ -20,15 +20,8 @@
 #define NN_ASSERT assert
 #endif
 
-#define NN_SETINPUT(nnp, x) {				\
-	NN_ASSERT( (nnp)->im.cols == (x).cols );	\
-	(nnp)->im = mat_share((x));				\
-}
-
-#define NN_SETOUTPUT(nnp, y) {;				\
-	NN_ASSERT( (nnp)->om.cols == (y).cols );	\
-	(nnp)->om = mat_share( (y) );				\
-}
+#define NN_INPUT(nnp) ( nnp->a[0] )
+#define NN_OUTPUT(nnp) ( nnp->a[nnp->size-1] )
 
 #define NN_PRINT(nn) nn_print(nn, #nn)
 
@@ -36,14 +29,11 @@
 
 
 typedef struct {
-	Mat im;
 	Mat *w;
 	Mat *b;
-	Mat om;
+	Mat *a;
 	size_t size;
 } NN;
-
-enum nn_alloc {RAND, ZERO};
 
 NN nn_alloc(size_t *arch, size_t size, size_t input_size);
 NN *nn_forward(NN *nn);
@@ -60,29 +50,27 @@ NN *nn_rand(NN* nn);
 #ifdef NN_IMPLEMENTATION
 
 
-NN nn_alloc(size_t *arch, size_t arch_size, size_t input_size) {
-	NN_ASSERT( arch_size > 0 );
+NN nn_alloc(size_t *arch, size_t size) {
+	NN_ASSERT( size > 0 );
 	NN nn;
-	nn.size = arch_size;
+	nn.size = size;
 
-	NN_ASSERT( (nn.w = NN_CALLOC(arch_size, sizeof(Mat))) != NULL );
-	NN_ASSERT( (nn.b = NN_CALLOC(arch_size, sizeof(Mat))) != NULL );
-	
-	nn.im.cols = input_size;
+	NN_ASSERT( (nn.w = NN_CALLOC(size, sizeof(Mat))) != NULL );
+	NN_ASSERT( (nn.b = NN_CALLOC(size, sizeof(Mat))) != NULL );
 
-	for (size_t i = 0; i < arch_size; i++) {
+	size_t input_size = 1;
+	for (size_t i = 0; i < size; i++) {
 		nn.w[i] = mat_alloc( input_size, arch[i] );		
 		nn.b[i] = mat_alloc( 1, arch[i] );
+		nn.a[i] = mat_alloc( 1, arch[i] );
 		input_size = arch[i]; 
 	}
-
-	nn.om.cols = input_size;
 
 	return nn;
 }
 
 NN *nn_rand(NN *nn) {
-	for (size_t i=0; i<nn->size; i++) {
+	for (size_t i=1; i<nn->size-1; i++) {
 		mat_rand(nn->w[i], 0, 1);
 		mat_rand(nn->b[i], 0, 1);
 	}
