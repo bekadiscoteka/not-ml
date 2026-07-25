@@ -1,4 +1,5 @@
 # little documentation, further to be improved
+**input matrix works only with single row** for now
 Each layer is represented by following matrices:
 - weight matrix:
 	- each *column* represents a neuron
@@ -18,5 +19,8 @@ NN struct:
 - size = size of those matrices
 
 
-
+```
+size_t arch[] = {3, 2, 1};
+nn_alloc(arch, sizeof(arch));
+```
 

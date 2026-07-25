@@ -124,7 +124,14 @@ Mat mat_brcst(Mat out, Mat x, Mat b);
 	}
 
 	Mat mat_sharrow(Mat m, size_t s) {
-		Mat row = { .stride = m.stride, .rows = 1, .cols = m.cols, .p = m.p + (m.stride * s) };
+
+		Mat row = { 
+			.stride = m.stride, 
+			.rows = 1, 
+			.cols = m.cols, 
+			.p = &MAT_AT(m, s, 0) 
+		};
+
 		return row;	
 	}
 
@@ -161,7 +168,7 @@ Mat mat_brcst(Mat out, Mat x, Mat b);
 
 	Mat mat_cpy(Mat dst, Mat src) {
 		MAT_ASSERT(dst.rows >= src.rows);
-		MAT_ASSERT(dst.cols >= src.cols);
+		MAT_ASSERT(dst.stride >= src.cols);
 		
 		dst.rows = src.rows;
 		dst.cols = src.cols;
@@ -171,6 +178,14 @@ Mat mat_brcst(Mat out, Mat x, Mat b);
 				MAT_AT(dst, i, j) = MAT_AT(src, i, j);
 		
 		return dst;
+	}
+
+	Mat mat_zero(Mat m) {
+		for (size_t i = 0; i < m.rows; i++) 
+			for (size_t j = 0; j < m.cols; j++) 
+				MAT_AT(m, i, j) = 0;
+
+		return m;
 	}
 
 

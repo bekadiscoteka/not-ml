@@ -20,8 +20,8 @@
 #define NN_ASSERT assert
 #endif
 
-#define NN_INPUT(nnp) ( nnp->a[0] )
-#define NN_OUTPUT(nnp) ( nnp->a[nnp->size-1] )
+#define NN_INPUT(nnp) ( (nnp)->a[0] )
+#define NN_OUTPUT(nnp) ( (nnp)->a[(nnp)->size-1] )
 
 #define NN_PRINT(nn) nn_print(nn, #nn)
 
@@ -35,10 +35,10 @@ typedef struct {
 	size_t size;
 } NN;
 
-NN nn_alloc(size_t *arch, size_t size, size_t input_size);
+NN nn_alloc(size_t *arch, size_t size);
 NN *nn_forward(NN *nn);
-float nn_cost(NN *nn, const Mat ti, const Mat to);
-NN *nn_fdiff(NN* grad, NN *nn, float eps, const Mat ti, const Mat to);
+//float nn_cost(NN *nn, const Mat ti, const Mat to);
+//NN *nn_fdiff(NN* grad, NN *nn, float eps, const Mat ti, const Mat to);
 NN *nn_train(NN *nn, NN* grad, float lr);
 void nn_print(NN *nn, const char *name);
 void mat_sigmoid(Mat m);
@@ -57,7 +57,8 @@ NN nn_alloc(size_t *arch, size_t size) {
 
 	NN_ASSERT( (nn.w = NN_CALLOC(size, sizeof(Mat))) != NULL );
 	NN_ASSERT( (nn.b = NN_CALLOC(size, sizeof(Mat))) != NULL );
-
+	NN_ASSERT( (nn.a = NN_CALLOC(size, sizeof(Mat))) != NULL );
+	
 	size_t input_size = 1;
 	for (size_t i = 0; i < size; i++) {
 		nn.w[i] = mat_alloc( input_size, arch[i] );		
@@ -70,7 +71,7 @@ NN nn_alloc(size_t *arch, size_t size) {
 }
 
 NN *nn_rand(NN *nn) {
-	for (size_t i=1; i<nn->size-1; i++) {
+	for (size_t i=1; i<nn->size; i++) {
 		mat_rand(nn->w[i], 0, 1);
 		mat_rand(nn->b[i], 0, 1);
 	}
@@ -80,7 +81,7 @@ NN *nn_rand(NN *nn) {
 void nn_print(NN *nn, const char *name) {
 	printf("%s = {\n", name);	
 	char buf[256];
-	for (size_t i=0; i < nn->size; i++) {
+	for (size_t i=1; i < nn->size; i++) {
 		snprintf(buf, sizeof(buf), "nw-mx: %3zu", i);
 		mat_print(nn->w[i], buf, 4);
 		snprintf(buf, sizeof(buf), "bs-mx: %3zu", i);
@@ -97,8 +98,8 @@ void mat_sigmoid(Mat m) {
 		}
 	}
 }
-
-NN *nn_forward(NN *nn) {
+/*
+NN *nn_forward_depr(NN *nn) {
 	
 	NN_ASSERT( nn->im.rows == nn->om.rows );
 
@@ -127,7 +128,21 @@ NN *nn_forward(NN *nn) {
 	nn->om = mat_cpy(nn->om, bufm);
 	return nn;
 }
+*/
 
+NN *nn_forward(NN *nn) {
+	
+	for (size_t i=1; i<nn->size; i++) {
+		mat_dot(nn->a[i], nn->a[i-1], nn->w[i]);  	
+		mat_brcst(nn->a[i], nn->a[i], nn->b[i]);
+		mat_sigmoid(nn->a[i]);
+	}	
+
+	return nn;
+}
+
+
+/*
 
 float nn_cost(NN *nn, const Mat ti, const Mat to) {
 	NN_ASSERT(ti.rows == to.rows);
@@ -199,6 +214,6 @@ NN *nn_train(NN *nn, NN* grad, float lr) {
 	}
 	return nn;
 }
-
+*/
 #endif
 

@@ -26,13 +26,20 @@ int main(void) {
 	};
 
 	Mat ti = mat_sharsub(m_dataset, 0, 4, 0, 2);
+	Mat ti0 = mat_sharrow(ti, 0);
 	Mat to = mat_sharcol(m_dataset, 2);
 
-	NN nn = nn_alloc( (size_t[2]) { 2, 1 }, 2, 2 );
+	NN nn = nn_alloc( (size_t[3]) { 2, 2, 1 }, 3);
 	nn_rand(&nn);
+	mat_zero(NN_OUTPUT(&nn));
 
 	NN_PRINT(&nn);
+	MAT_PRINT(NN_OUTPUT(&nn));
 
+	mat_cpy(NN_INPUT(&nn), ti0);
+	nn_forward(&nn); 
+	MAT_PRINT(NN_OUTPUT(&nn));
+#if 0
 	printf("cost: %f\n", nn_cost(&nn, ti, to)); 
 
 	NN grad = nn_alloc( (size_t[2]) { 2, 1 }, 2, 2 );
@@ -44,7 +51,6 @@ int main(void) {
 		//printf("cost: %f\n", nn_cost(&nn, ti, to)); 
 	}
 
-#if 1
 
 	for (size_t i=0; i < m_dataset.rows; i++) {
 		MAT_ON_STACK(input, 1, 2);
@@ -57,9 +63,9 @@ int main(void) {
 		printf("%d ^ %d: %f\n", (int) MAT_AT(m_dataset, i, 0), (int) MAT_AT(m_dataset, i, 1), MAT_AT(nn.om, 0, 0));
 	}
 
-#endif
 
 	printf("final cost: %f\n", nn_cost(&nn, ti, to)); 
+	#endif
 
 	return 0;
 
