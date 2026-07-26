@@ -1,5 +1,6 @@
 # little documentation, further to be improved
-**input matrix works only with single row** for now
+**input matrix works only with single row for now**
+
 Each layer is represented by following matrices:
 - weight matrix:
 	- each *column* represents a neuron
