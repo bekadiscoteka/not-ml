@@ -16,6 +16,7 @@ Mat mat_alloc(size_t row, size_t col);
 Mat mat_dot(Mat out, Mat a, Mat b);
 Mat mat_rand(Mat, float lower, float upper);
 Mat mat_add(Mat out, Mat a, Mat b);
+Mat mat_subtr(Mat out, Mat a, Mat b);
 void mat_print(Mat, const char*, int);
 
 Mat mat_sharrow(Mat, size_t);
@@ -24,6 +25,7 @@ Mat mat_cpy(Mat, Mat);
 Mat mat_share(Mat src);
 Mat mat_sharsub(Mat m, size_t ri, size_t rsize, size_t ci, size_t csize);
 Mat mat_brcst(Mat out, Mat x, Mat b);
+Mat mat_fill(Mat, float);
 
 #ifndef MAT_ASSERT
 	#define MAT_ASSERT assert
@@ -47,6 +49,16 @@ Mat mat_brcst(Mat out, Mat x, Mat b);
 
 #define MAT_AT(m, r, c) ( (m).p[ ((m).stride) * (r) + (c) ] )
 #define MAT_PRINT(m) mat_print(m, #m, 0)
+
+#define MAT_FOREACH(m, op, f) {\
+	for (size_t r = 0; r < m.rows; r++) {\
+		for (size_t c = 0; c < m.cols; c++) {\
+			MAT_AT(m, r, c) = MAT_AT(m, r, c) op f;\
+		}\
+	}\
+}
+
+	
 
 #endif
 
@@ -110,6 +122,32 @@ Mat mat_brcst(Mat out, Mat x, Mat b);
 		return out;
 	}
 
+	Mat mat_mul(Mat out, Mat a, Mat b) {
+		MAT_ASSERT( (a.cols == b.cols) && (a.rows == b.rows) );
+		MAT_ASSERT( (out.rows == a.rows) && (out.cols == a.cols) );
+
+		for (size_t r=0; r < a.rows; r++) {
+			for (size_t c=0; c < a.cols; c++) {
+				MAT_AT(out, r, c) = MAT_AT(a, r, c) * MAT_AT(b, r, c);
+			}
+		}
+		return out;
+	}
+
+	Mat mat_subtr(Mat out, Mat a, Mat b) {
+		MAT_ASSERT( (a.cols == b.cols) && (a.rows == b.rows) );
+		MAT_ASSERT( (out.rows == a.rows) && (out.cols == a.cols) );
+
+		for (size_t r=0; r < a.rows; r++) {
+			for (size_t c=0; c < a.cols; c++) {
+				MAT_AT(out, r, c) = MAT_AT(a, r, c) - MAT_AT(b, r, c);
+			}
+		}
+
+		return out;
+
+	}
+
 	Mat mat_brcst(Mat out, Mat x, Mat b) {
 		MAT_ASSERT(x.cols == b.cols);
 		MAT_ASSERT(out.rows == x.rows);
@@ -154,6 +192,7 @@ Mat mat_brcst(Mat out, Mat x, Mat b);
 		return sm;
 	}
 
+	// completely useless function, TB-deleted
 	Mat mat_share(Mat src) {
 		Mat dst = {
 			.cols = src.cols, 
@@ -180,10 +219,10 @@ Mat mat_brcst(Mat out, Mat x, Mat b);
 		return dst;
 	}
 
-	Mat mat_zero(Mat m) {
+	Mat mat_fill(Mat m, float v) {
 		for (size_t i = 0; i < m.rows; i++) 
 			for (size_t j = 0; j < m.cols; j++) 
-				MAT_AT(m, i, j) = 0;
+				MAT_AT(m, i, j) = v;
 
 		return m;
 	}

@@ -31,6 +31,7 @@
 typedef struct {
 	Mat *w;
 	Mat *b;
+	Mat *z;
 	Mat *a;
 	size_t size;
 } NN;
@@ -62,8 +63,9 @@ NN nn_alloc(size_t *arch, size_t size) {
 	size_t input_size = 1;
 	for (size_t i = 0; i < size; i++) {
 		nn.w[i] = mat_alloc( input_size, arch[i] );		
-		nn.b[i] = mat_alloc( 1, arch[i] );
-		nn.a[i] = mat_alloc( 1, arch[i] );
+		nn.b[i] = mat_alloc( 1, arch[i] ); 
+		nn.z[i] = mat_alloc( 1, arch[i] ); // for only single sample input
+		nn.a[i] = mat_alloc( 1, arch[i] ); // for only single sample input
 		input_size = arch[i]; 
 	}
 
@@ -133,12 +135,42 @@ NN *nn_forward_depr(NN *nn) {
 NN *nn_forward(NN *nn) {
 	
 	for (size_t i=1; i<nn->size; i++) {
-		mat_dot(nn->a[i], nn->a[i-1], nn->w[i]);  	
-		mat_brcst(nn->a[i], nn->a[i], nn->b[i]);
+		mat_dot(nn->z[i], nn->a[i-1], nn->w[i]);  	
+		mat_brcst(nn->z[i], nn->a[i], nn->b[i]);
 		mat_sigmoid(nn->a[i]);
 	}	
 
 	return nn;
+}
+
+void nn_backward(NN *nn, Mat y, Mat g) {
+	NN_ASSERT( y.cols == NN_OUTPUT(nn).cols );
+	NN_ASSERT( y.rows == NN_OUTPUT(nn).rows );
+
+	size_t last = nn->size-1;
+	MAT_ON_STACK( diff, y.rows, y.cols );
+	MAT_ON_STACK( z_square, nn->z[last].rows, nn->z[last].cols );
+
+	mat_mul( z_square, nn->z[last], nn->z[last] );
+	Mat da_dz = mat_subtr( z_square, nn->z[last], z_square );	
+
+	mat_subtr( diff, NN_OUTPUT(nn), y );
+	MAT_FOREACH( diff, *, 2 );	
+	Mat dC_da = diff;
+
+	Mat dC_db = mat_mul( dC_da, dC_da, da_dz );
+	MAT_ON_STACK( ident_mat, 1, dC_db.rows );
+	mat_fill( ident_mat, 1 );
+	MAT_ON_STACK( sum_dC_db, 1, dC_db.cols );
+	mat_dot( sum_dC_db, ident_mat, dC_db );
+
+	float n = (float) dC_db.rows;
+	MAT_FOREACH( sum_dC_db, /, n );
+	Mat avg_dC_db = sum_dC_db;
+
+	mat_cpy(nn->b[last], avg_dC_db);
+	// we calculated gradients for biases of last layer
+	// 
 }
 
 
