@@ -51,9 +51,9 @@ Mat mat_fill(Mat, float);
 #define MAT_PRINT(m) mat_print(m, #m, 0)
 
 #define MAT_FOREACH(m, op, f) {\
-	for (size_t r = 0; r < m.rows; r++) {\
-		for (size_t c = 0; c < m.cols; c++) {\
-			MAT_AT(m, r, c) = MAT_AT(m, r, c) op f;\
+	for (size_t _r = 0; _r < m.rows; _r++) {\
+		for (size_t _c = 0; _c < m.cols; _c++) {\
+			MAT_AT(m, _r, _c) = MAT_AT(m, _r, _c) op f;\
 		}\
 	}\
 }

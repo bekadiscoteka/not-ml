@@ -143,11 +143,13 @@ NN *nn_forward(NN *nn) {
 	return nn;
 }
 
-void nn_backward(NN *nn, Mat y, Mat g) {
+void nn_backward(NN *nn, NN *g, Mat y) {
 	NN_ASSERT( y.cols == NN_OUTPUT(nn).cols );
 	NN_ASSERT( y.rows == NN_OUTPUT(nn).rows );
 
 	size_t last = nn->size-1;
+	size_t n = y.rows;
+	// calculate last bias gradient
 	MAT_ON_STACK( diff, y.rows, y.cols );
 	MAT_ON_STACK( z_square, nn->z[last].rows, nn->z[last].cols );
 
@@ -159,18 +161,39 @@ void nn_backward(NN *nn, Mat y, Mat g) {
 	Mat dC_da = diff;
 
 	Mat dC_db = mat_mul( dC_da, dC_da, da_dz );
-	MAT_ON_STACK( ident_mat, 1, dC_db.rows );
-	mat_fill( ident_mat, 1 );
 	MAT_ON_STACK( sum_dC_db, 1, dC_db.cols );
-	mat_dot( sum_dC_db, ident_mat, dC_db );
 
-	float n = (float) dC_db.rows;
+	{
+		MAT_ON_STACK( ident_mat, 1, dC_db.rows );
+		mat_fill( ident_mat, 1 );
+		mat_dot( sum_dC_db, ident_mat, dC_db );
+	}
+
 	MAT_FOREACH( sum_dC_db, /, n );
 	Mat avg_dC_db = sum_dC_db;
 
 	mat_cpy(nn->b[last], avg_dC_db);
-	// we calculated gradients for biases of last layer
-	// 
+
+	// calculate last weight gradient
+	MAT_ON_STACK( a_prev_clone, nn->a[last-1].rows, nn->a[last-1].cols );
+	mat_cpy( a_prev_clone, nn->a[last-1] );
+	for (size_t i=0; i<nn->b[last].cols; i++) {
+		MAT_FOREACH( a_prev_clone, *, MAT_AT(nn->b[last], 0, i ) ); 
+		// l means "for local neuron"
+		Mat dw_l = a_prev_clone;
+		MAT_ON_STACK( sum_dw_l, 1, dw_l.cols );
+		{
+			MAT_ON_STACK( ident_mat, 1, dw_l.rows );
+			mat_fill( ident_mat, 1 );
+
+			mat_dot( sum_dw_l, ident_mat, dw_l );
+		}
+		MAT_FOREACH( sum_dw_l, /, n );
+		Mat avg_dw_l = sum_dw_l;
+
+		for (size_t j=0; j < avg_dw_l.cols; j++) 
+			MAT_AT( nn->w[last], j, i ) = MAT_AT( avg_dw_l, 0, j );
+	}	
 }
 
 
