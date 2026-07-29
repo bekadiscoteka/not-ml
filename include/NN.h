@@ -184,7 +184,7 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 					MAT_ON_STACK( w_T, nn->w[l+1].cols, nn->w[l+1].rows );
 					mat_transpose( w_T, nn->w[l+1] );
 
-					for (size_t r=0; r<w_T; r++) 
+					for (size_t r=0; r<w_T.rows; r++) 
 						mat_mul(mat_sharrow(w_T, r), z_row, mat_sharrow(w_T, r));
 					Mat dz_db = w_T;					
 
@@ -198,8 +198,8 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 					MAT_FOREACH( sum_dz_db, /, dz_db.rows );
 					Mat avg_dz_db = sum_dz_db;
 
-					MAT_ON_STACK( dC_db, g->b[l+1], avg_dz_db.cols );
-					for (size_t c=0; c<g->b[l+1]; c++) {
+					MAT_ON_STACK( dC_db, g->b[l+1].cols, avg_dz_db.cols );
+					for (size_t c=0; c<g->b[l+1].cols; c++) {
 						MAT_ON_STACK( temp, 1, avg_dz_db.cols );
 						mat_cpy(temp, avg_dz_db);
 
@@ -218,7 +218,7 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 					mat_add( g->b[l], g->b[l], avg_dC_db );
 				}
 				
-				MAT_FOREACH( g->b[l], /, nn->z[l].rows );
+				MAT_FOREACH( g->b[l], /, n );
 			}
 
 		// calculate l weight gradient
