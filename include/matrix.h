@@ -110,6 +110,17 @@ Mat mat_fill(Mat, float);
 		return out;
 	}
 
+	Mat mat_transpose(Mat out, Mat m) {
+		MAT_ASSERT( out.rows == m.cols );
+		MAT_ASSERT( out.cols == m.rows );
+
+		for (size_t r=0; i<out.rows; r++) 
+			for (size_t c=0; j<out.cols; c++) 
+				MAT_AT(out, r, c) = MAT_AT(m, c, r); 
+
+		return out;
+	}
+
 	Mat mat_add(Mat out, Mat a, Mat b) {
 		MAT_ASSERT( (a.cols == b.cols) && (a.rows == b.rows) );
 		MAT_ASSERT( (out.rows == a.rows) && (out.cols == a.cols) );
