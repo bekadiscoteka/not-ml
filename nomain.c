@@ -5,12 +5,6 @@
 
 #include <stdio.h>
 
-float dataset[] = {
-	 0, 0, 0 ,
-	 0, 1, 1 ,
-	 1, 0, 1 ,
-	 1, 1, 0 
-};
 
 
 
@@ -18,62 +12,51 @@ int main(void) {
 
 	srand(time(0));
 
-	Mat m_dataset = {
-		.rows = 4,
-		.cols = 3,
+	float dataset[] = {
+		 0, 0, 0 ,
+		 0, 1, 1 ,
+		 1, 0, 1 ,
+		 1, 1, 0 
+	};
+	Mat mat_dataset = { 
+		.rows = 4, 
+		.cols = 3, 
 		.stride = 3,
 		.p = dataset
 	};
 
-	Mat ti = mat_sharsub(m_dataset, 0, 4, 0, 2);
-	MAT_PRINT(ti);
-	Mat ti0 = mat_sharrow(ti, 0);
-	Mat y = mat_sharsub(m_dataset, 0, 1, 2, 1);
-	MAT_PRINT(y);
-
-
-	NN nn = nn_alloc( (size_t[4]) { 2, 2, 3, 1 }, 4);
-	NN g = nn_alloc( (size_t[4]) { 2, 2, 3, 1 }, 4);
+	size_t arch[3] = {2, 2, 1};
+	NN nn = nn_alloc( arch, sizeof(arch)/sizeof(size_t) );
 	nn_rand(&nn);
-	mat_fill(NN_OUTPUT(&nn), 0);
+	NN_PRINT(&nn);
+
+	float tp[2] = {0, 1};
+	Mat tm = {.cols = 2, .rows = 1, .stride=2, .p=tp};
+	mat_cpy(NN_INPUT(&nn), tm);
+	nn_forward(&nn);
+	MAT_PRINT(NN_OUTPUT(&nn));
+
+	NN g = nn_alloc(arch, sizeof(arch)/sizeof(size_t));
+	for (size_t epoch=0; epoch<100; epoch++) {
+		for (size_t n=0; n<mat_dataset.rows; n++) {
+			Mat x0 = mat_sharsub(mat_dataset,  n, 1, 0, 2);
+			Mat y0 = mat_sharsub(mat_dataset, n, 1, 2, 1); 	
+
+			mat_cpy(NN_INPUT(&nn), x0);
+			nn_forward(&nn);
+			nn_backward(&nn, &g, y0);
+			
+			nn_train(&nn, &g, 0.01);
+		}
+	}
 
 	NN_PRINT(&nn);
-	NN_PRINT(&g);
+
+	printf("TEST CASE");
+	mat_cpy(NN_INPUT(&nn), tm);
+	nn_forward(&nn);
 	MAT_PRINT(NN_OUTPUT(&nn));
-
-	mat_cpy(NN_INPUT(&nn), ti0);
-	nn_forward(&nn); 
-	MAT_PRINT(NN_OUTPUT(&nn));
-	nn_backward( &nn, &g, y ); 
-	NN_PRINT(&g);
-#if 0
-	printf("cost: %f\n", nn_cost(&nn, ti, to)); 
-
-	NN grad = nn_alloc( (size_t[2]) { 2, 1 }, 2, 2 );
-
-	for (int i=0; i<100*100; i++) {
-		nn_fdiff(&grad, &nn, 0.01f, ti, to);
-		nn_train(&nn, &grad, 0.1f);
-		
-		//printf("cost: %f\n", nn_cost(&nn, ti, to)); 
-	}
-
-
-	for (size_t i=0; i < m_dataset.rows; i++) {
-		MAT_ON_STACK(input, 1, 2);
-		MAT_ON_STACK(output, 1, 1);
-		input.p[0] = MAT_AT(m_dataset, i, 0);
-		input.p[1] = MAT_AT(m_dataset, i, 1);
-		NN_SETINPUT(&nn, input); 
-		NN_SETOUTPUT(&nn, output);
-		nn_forward(&nn);
-		printf("%d ^ %d: %f\n", (int) MAT_AT(m_dataset, i, 0), (int) MAT_AT(m_dataset, i, 1), MAT_AT(nn.om, 0, 0));
-	}
-
-
-	printf("final cost: %f\n", nn_cost(&nn, ti, to)); 
-	#endif
 
 	return 0;
-
 }
+

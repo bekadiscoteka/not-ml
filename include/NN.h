@@ -21,7 +21,7 @@
 #endif
 
 #define NN_INPUT(nnp) ( (nnp)->a[0] )
-#define NN_OUTPUT(nnp) ( (nnp)->a[(nnp)->size-1] )
+#define NN_OUTPUT(nnp) ( (nnp)->a[((nnp)->size)-1] )
 
 #define NN_PRINT(nn) nn_print(nn, #nn)
 
@@ -89,7 +89,9 @@ void nn_print(NN *nn, const char *name) {
 		mat_print(nn->w[i], buf, 4);
 		snprintf(buf, sizeof(buf), "bs-mx: %3zu", i);
 		mat_print(nn->b[i], buf, 4);
+		putchar('\n');
 	}
+
 	printf("}\n");
 }
 
@@ -138,7 +140,10 @@ NN *nn_forward(NN *nn) {
 	for (size_t i=1; i<nn->size; i++) {
 		mat_dot(nn->z[i], nn->a[i-1], nn->w[i]);  	
 		mat_brcst(nn->z[i], nn->a[i], nn->b[i]);
-		mat_sigmoid(nn->a[i]);
+
+		for (size_t r=0; r<nn->z[i].rows; r++) 
+			for (size_t c=0; c<nn->z[i].cols; c++) 
+				MAT_AT( nn->a[i], r, c ) = SIGMOIDF( MAT_AT(nn->z[i], r, c) );
 	}	
 
 	return nn;
@@ -300,7 +305,7 @@ NN *nn_fdiff(NN* grad, NN *nn, float eps, const Mat ti, const Mat to) {
 
 	return grad;
 }
-
+*/
 
 NN *nn_train(NN *nn, NN* grad, float lr) {
 	for (size_t i=0; i<nn->size; i++) {
@@ -318,6 +323,5 @@ NN *nn_train(NN *nn, NN* grad, float lr) {
 	}
 	return nn;
 }
-*/
 #endif
 
