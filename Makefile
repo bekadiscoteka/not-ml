@@ -1,4 +1,4 @@
-FLAGS = -MMD -MP -Iinclude -lm
+FLAGS = -MMD -MP -Iinclude -lm -g
 bin/out: nomain.c | bin
 	@echo "Building the file ..."
 	@gcc $^ $(FLAGS) -o $@

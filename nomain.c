@@ -26,19 +26,26 @@ int main(void) {
 	};
 
 	Mat ti = mat_sharsub(m_dataset, 0, 4, 0, 2);
+	MAT_PRINT(ti);
 	Mat ti0 = mat_sharrow(ti, 0);
-	Mat to = mat_sharcol(m_dataset, 2);
+	Mat y = mat_sharsub(m_dataset, 0, 1, 2, 1);
+	MAT_PRINT(y);
 
-	NN nn = nn_alloc( (size_t[3]) { 2, 2, 1 }, 3);
+
+	NN nn = nn_alloc( (size_t[4]) { 2, 2, 3, 1 }, 4);
+	NN g = nn_alloc( (size_t[4]) { 2, 2, 3, 1 }, 4);
 	nn_rand(&nn);
-	mat_zero(NN_OUTPUT(&nn));
+	mat_fill(NN_OUTPUT(&nn), 0);
 
 	NN_PRINT(&nn);
+	NN_PRINT(&g);
 	MAT_PRINT(NN_OUTPUT(&nn));
 
 	mat_cpy(NN_INPUT(&nn), ti0);
 	nn_forward(&nn); 
 	MAT_PRINT(NN_OUTPUT(&nn));
+	nn_backward( &nn, &g, y ); 
+	NN_PRINT(&g);
 #if 0
 	printf("cost: %f\n", nn_cost(&nn, ti, to)); 
 

@@ -44,7 +44,7 @@ NN *nn_train(NN *nn, NN* grad, float lr);
 void nn_print(NN *nn, const char *name);
 void mat_sigmoid(Mat m);
 NN *nn_rand(NN* nn);
-
+void nn_backward(NN *nn, NN *g, Mat y);
 
 #endif
 
@@ -58,8 +58,9 @@ NN nn_alloc(size_t *arch, size_t size) {
 
 	NN_ASSERT( (nn.w = NN_CALLOC(size, sizeof(Mat))) != NULL );
 	NN_ASSERT( (nn.b = NN_CALLOC(size, sizeof(Mat))) != NULL );
+	NN_ASSERT( (nn.z = NN_CALLOC(size, sizeof(Mat))) != NULL );
 	NN_ASSERT( (nn.a = NN_CALLOC(size, sizeof(Mat))) != NULL );
-	
+
 	size_t input_size = 1;
 	for (size_t i = 0; i < size; i++) {
 		nn.w[i] = mat_alloc( input_size, arch[i] );		
@@ -204,7 +205,7 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 						mat_cpy(temp, avg_dz_db);
 
 						MAT_FOREACH( temp, *, MAT_AT(g->b[l+1], 0, c) );
-						mat_cpy(mat_sharrow(dC_db, c), temp)
+						mat_cpy(mat_sharrow(dC_db, c), temp);
 					}
 					MAT_ON_STACK(sum_dC_db, 1, dC_db.cols);
 					{
@@ -212,7 +213,7 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 						mat_fill( ident_mat, 1 );
 						mat_dot( sum_dC_db, ident_mat, dC_db );
 					}
-					MAT_FOREACH(sum_dC_db, /, g->b[l+1]);
+					MAT_FOREACH(sum_dC_db, /, g->b[l+1].cols);
 					Mat avg_dC_db = sum_dC_db;
 
 					mat_add( g->b[l], g->b[l], avg_dC_db );

@@ -18,6 +18,7 @@ Mat mat_rand(Mat, float lower, float upper);
 Mat mat_add(Mat out, Mat a, Mat b);
 Mat mat_subtr(Mat out, Mat a, Mat b);
 void mat_print(Mat, const char*, int);
+Mat mat_transpose(Mat out, Mat m);
 
 Mat mat_sharrow(Mat, size_t);
 Mat mat_sharcol(Mat, size_t);
@@ -114,8 +115,8 @@ Mat mat_fill(Mat, float);
 		MAT_ASSERT( out.rows == m.cols );
 		MAT_ASSERT( out.cols == m.rows );
 
-		for (size_t r=0; i<out.rows; r++) 
-			for (size_t c=0; j<out.cols; c++) 
+		for (size_t r=0; r<out.rows; r++) 
+			for (size_t c=0; c<out.cols; c++) 
 				MAT_AT(out, r, c) = MAT_AT(m, c, r); 
 
 		return out;
@@ -190,14 +191,14 @@ Mat mat_fill(Mat, float);
 	}
 
 	Mat mat_sharsub(Mat m, size_t ri, size_t rsize, size_t ci, size_t csize) {
-		MAT_ASSERT( m.rows >= ri+rsize-1 );
-		MAT_ASSERT( m.cols >= ci+csize-1 );
+		MAT_ASSERT( m.rows >= ri+rsize );
+		MAT_ASSERT( m.cols >= ci+csize );
 
 		Mat sm = { 
 			.rows = rsize,
 			.cols = csize,
 			.stride = m.stride,
-			.p = m.p + (ci * m.stride) + ri
+			.p = &MAT_AT(m, ri, ci)
 		};
 
 		return sm;
