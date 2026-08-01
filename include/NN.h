@@ -26,7 +26,7 @@
 #define NN_PRINT(nn) nn_print(nn, #nn)
 
 #define SIGMOIDF(x) ( 1.0f / (1.0f + expf(-(x))) )
-#define SIGMOIDF(x) ( (float) ( exp(x) / (1 + exp(x))) )
+
 typedef struct {
 	Mat *w;
 	Mat *b;
@@ -164,9 +164,9 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 
 	for (size_t l=nn->size-1; l > 0; l--) {
 		// calculate last bias gradient
-		MAT_ON_STACK( z_square, nn->z[l].rows, nn->z[l].cols );
-		mat_mul( z_square, nn->z[l], nn->z[l] );
-		Mat da_dz = mat_subtr( z_square, nn->z[l], z_square );	
+		MAT_ON_STACK( a_square, nn->a[l].rows, nn->a[l].cols );
+		mat_mul( a_square, nn->a[l], nn->a[l] );
+		Mat da_dz = mat_subtr( a_square, nn->z[l], a_square );	
 		
 			if ( l == last ) {
 				MAT_ON_STACK( diff, y.rows, y.cols );
@@ -179,6 +179,7 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 				Mat dC_da = diff;
 
 				Mat dC_db = mat_mul( dC_da, dC_da, da_dz );
+				// we should delete averaging over sample begin
 				MAT_ON_STACK( sum_dC_db, 1, dC_db.cols );
 
 				{
@@ -195,6 +196,7 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 				Mat avg_dC_db = sum_dC_db;
 
 				mat_cpy(g->b[l], avg_dC_db);
+				// end
 
 			} else {
 				mat_fill(g->b[l], 0);

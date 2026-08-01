@@ -39,7 +39,7 @@ int main(void) {
 #if 1
 	Mat x = mat_sharsub(mat_dataset, 0, 4, 0, 2);
 	Mat y = mat_sharcol(mat_dataset, 2); 
-	for (size_t epoch=0; epoch<1000; epoch++) {
+	for (size_t epoch=0; epoch<100000; epoch++) {
 		mat_cpy(NN_INPUT(&nn), x);
 		nn_forward(&nn);
 		nn_backward(&nn, &g, y);
