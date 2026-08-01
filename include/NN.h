@@ -25,8 +25,7 @@
 
 #define NN_PRINT(nn) nn_print(nn, #nn)
 
-#define SIGMOIDF(x) ( (float) ( exp(x) / (1 + exp(x))) )
-
+#define SIGMOIDF(x) ( 1.0f / (1.0f + expf(-(x))) )
 
 typedef struct {
 	Mat *w;
@@ -36,7 +35,7 @@ typedef struct {
 	size_t size;
 } NN;
 
-NN nn_alloc(size_t *arch, size_t size);
+NN nn_alloc(size_t *arch, size_t size, size_t batch);
 NN *nn_forward(NN *nn);
 //float nn_cost(NN *nn, const Mat ti, const Mat to);
 //NN *nn_fdiff(NN* grad, NN *nn, float eps, const Mat ti, const Mat to);
@@ -51,7 +50,7 @@ void nn_backward(NN *nn, NN *g, Mat y);
 #ifdef NN_IMPLEMENTATION
 
 
-NN nn_alloc(size_t *arch, size_t size) {
+NN nn_alloc(size_t *arch, size_t size, size_t batch) {
 	NN_ASSERT( size > 0 );
 	NN nn;
 	nn.size = size;
@@ -65,8 +64,8 @@ NN nn_alloc(size_t *arch, size_t size) {
 	for (size_t i = 0; i < size; i++) {
 		nn.w[i] = mat_alloc( input_size, arch[i] );		
 		nn.b[i] = mat_alloc( 1, arch[i] ); 
-		nn.z[i] = mat_alloc( 1, arch[i] ); // for only single sample input
-		nn.a[i] = mat_alloc( 1, arch[i] ); // for only single sample input
+		nn.z[i] = mat_alloc( batch, arch[i] ); // for only single sample input
+		nn.a[i] = mat_alloc( batch, arch[i] ); // for only single sample input
 		input_size = arch[i]; 
 	}
 
@@ -193,8 +192,8 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 
 			} else {
 				mat_fill(g->b[l], 0);
-				for (size_t i=0; i < nn->z[l].rows; i++) {
-					Mat z_row = mat_sharrow(nn->z[l], i);
+				for (size_t i=0; i < da_dz.rows; i++) {
+					Mat z_row = mat_sharrow(da_dz, i);
 					MAT_ON_STACK( w_T, nn->w[l+1].cols, nn->w[l+1].rows );
 					mat_transpose( w_T, nn->w[l+1] );
 
@@ -251,7 +250,7 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 		// calculate l weight gradient
 		MAT_ON_STACK( a_prev_clone, nn->a[l-1].rows, nn->a[l-1].cols );
 		mat_cpy( a_prev_clone, nn->a[l-1] );
-		for (size_t i=0; i<nn->b[l].cols; i++) {
+		for (size_t i=0; i<g->b[l].cols; i++) {
 				
 			for (size_t r = 0; r < a_prev_clone.rows; r++) 
 				for (size_t c = 0; c < a_prev_clone.cols; c++) 
