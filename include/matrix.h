@@ -59,8 +59,6 @@ Mat mat_fill(Mat, float);
 	}\
 }
 
-	
-
 #endif
 
 #ifdef MAT_IMPLEMENTATION
@@ -171,6 +169,17 @@ Mat mat_fill(Mat, float);
 			mat_add(mat_sharrow(out, i), b, mat_sharrow(x, i));
 
 		return out;
+
+	}
+
+	Mat mat_avgcol(Mat src, Mat m) {
+		MAT_ASSERT( m.cols == src.cols );
+
+		MAT_ON_STACK( ident_mat, 1, m.rows );
+		mat_fill( ident_mat, 1 );
+		mat_dot( src, ident_mat, m );
+
+		return src;
 	}
 
 	Mat mat_sharrow(Mat m, size_t s) {
@@ -238,7 +247,6 @@ Mat mat_fill(Mat, float);
 
 		return m;
 	}
-
 
 
 #endif
