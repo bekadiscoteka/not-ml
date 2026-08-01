@@ -139,7 +139,7 @@ NN *nn_forward(NN *nn) {
 	
 	for (size_t i=1; i<nn->size; i++) {
 		mat_dot(nn->z[i], nn->a[i-1], nn->w[i]);  	
-		mat_brcst(nn->z[i], nn->a[i], nn->b[i]);
+		mat_brcst(nn->z[i], nn->z[i], nn->b[i]);
 
 		for (size_t r=0; r<nn->z[i].rows; r++) 
 			for (size_t c=0; c<nn->z[i].cols; c++) 
@@ -255,7 +255,7 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 				
 			for (size_t r = 0; r < a_prev_clone.rows; r++) 
 				for (size_t c = 0; c < a_prev_clone.cols; c++) 
-					MAT_AT(a_prev_clone, r, c) = MAT_AT(a_prev_clone, r, c) * MAT_AT(nn->b[l], 0, i);
+					MAT_AT(a_prev_clone, r, c) = MAT_AT(a_prev_clone, r, c) * MAT_AT(g->b[l], 0, i);
 
 			// l means "for local neuron"
 			Mat dw_l = a_prev_clone;

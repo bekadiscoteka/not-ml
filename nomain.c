@@ -30,7 +30,7 @@ int main(void) {
 	nn_rand(&nn);
 	NN_PRINT(&nn);
 
-	float tp[2] = {0, 0};
+	float tp[2] = {0, 1};
 	Mat tm = {.cols = 2, .rows = 1, .stride=2, .p=tp};
 	mat_cpy(NN_INPUT(&nn), tm);
 	nn_forward(&nn);
