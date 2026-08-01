@@ -26,7 +26,7 @@
 #define NN_PRINT(nn) nn_print(nn, #nn)
 
 #define SIGMOIDF(x) ( 1.0f / (1.0f + expf(-(x))) )
-
+#define SIGMOIDF(x) ( (float) ( exp(x) / (1 + exp(x))) )
 typedef struct {
 	Mat *w;
 	Mat *b;
@@ -102,6 +102,12 @@ void mat_sigmoid(Mat m) {
 		}
 	}
 }
+
+float sigmoidf(float x) {
+	float expx = expf(x);
+	return expx / (1.0 + expx);
+}
+
 /*
 NN *nn_forward_depr(NN *nn) {
 	
@@ -142,7 +148,7 @@ NN *nn_forward(NN *nn) {
 
 		for (size_t r=0; r<nn->z[i].rows; r++) 
 			for (size_t c=0; c<nn->z[i].cols; c++) 
-				MAT_AT( nn->a[i], r, c ) = SIGMOIDF( MAT_AT(nn->z[i], r, c) );
+				MAT_AT( nn->a[i], r, c ) = sigmoidf( MAT_AT(nn->z[i], r, c) );
 	}	
 
 	return nn;
@@ -166,9 +172,9 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 				MAT_ON_STACK( diff, y.rows, y.cols );
 				mat_subtr( diff, NN_OUTPUT(nn), y );
 
-				for (size_t r = 0; r < diff.rows; r++) 
-					for (size_t c = 0; c < diff.cols; c++) 
-						MAT_AT(diff, r, c) = MAT_AT(diff, r, c) * 2;
+				for (size_t _r = 0; _r < diff.rows; _r++) 
+					for (size_t _c = 0; _c < diff.cols; _c++) 
+						MAT_AT(diff, _r, _c) = MAT_AT(diff, _r, _c) * 2;
 
 				Mat dC_da = diff;
 
@@ -182,9 +188,9 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 				}
 
 				
-				for (size_t r = 0; r < sum_dC_db.rows; r++) 
-					for (size_t c = 0; c < sum_dC_db.cols; c++) 
-						MAT_AT(sum_dC_db, r, c) = MAT_AT(sum_dC_db, r, c) / n;
+				for (size_t _r = 0; _r < sum_dC_db.rows; _r++) 
+					for (size_t _c = 0; _c < sum_dC_db.cols; _c++) 
+						MAT_AT(sum_dC_db, _r, _c) = MAT_AT(sum_dC_db, _r, _c) / n;
 
 				Mat avg_dC_db = sum_dC_db;
 
@@ -208,9 +214,9 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 						mat_dot( sum_dz_db, ident_mat, dz_db );
 					}
 					
-					for (size_t r = 0; r < sum_dz_db.rows; r++) 
-						for (size_t c = 0; c < sum_dz_db.cols; c++) 
-							MAT_AT(sum_dz_db, r, c) = MAT_AT(sum_dz_db, r, c) / dz_db.rows;
+					for (size_t _r = 0; _r < sum_dz_db.rows; _r++) 
+						for (size_t _c = 0; _c < sum_dz_db.cols; _c++) 
+							MAT_AT(sum_dz_db, _r, _c) = MAT_AT(sum_dz_db, _r, _c) / dz_db.rows;
 
 					Mat avg_dz_db = sum_dz_db;
 
@@ -219,9 +225,9 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 						MAT_ON_STACK( temp, 1, avg_dz_db.cols );
 						mat_cpy(temp, avg_dz_db);
 
-						for (size_t r = 0; r < temp.rows; r++) 
-							for (size_t c = 0; c < temp.cols; c++) 
-								MAT_AT(temp, r, c) = MAT_AT(temp, r, c) * MAT_AT(g->b[l+1], 0, c);
+						for (size_t _r = 0; _r < temp.rows; _r++) 
+							for (size_t _c = 0; _c < temp.cols; _c++) 
+								MAT_AT(temp, _r, _c) = MAT_AT(temp, _r, _c) * MAT_AT(g->b[l+1], 0, c);
 
 						mat_cpy(mat_sharrow(dC_db, c), temp);
 					}
@@ -232,18 +238,18 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 						mat_dot( sum_dC_db, ident_mat, dC_db );
 					}
 
-					for (size_t r = 0; r < sum_dC_db.rows; r++) 
-						for (size_t c = 0; c < sum_dC_db.cols; c++) 
-							MAT_AT(sum_dC_db, r, c) = MAT_AT(sum_dC_db, r, c) / g->b[l+1].cols;
+					for (size_t _r = 0; _r < sum_dC_db.rows; _r++) 
+						for (size_t _c = 0; _c < sum_dC_db.cols; _c++) 
+							MAT_AT(sum_dC_db, _r, _c) = MAT_AT(sum_dC_db, _r, _c) / g->b[l+1].cols;
 
 					Mat avg_dC_db = sum_dC_db;
 
 					mat_add( g->b[l], g->b[l], avg_dC_db );
 				}
 				
-				for (size_t r = 0; r < g->b[l].rows; r++) 
-					for (size_t c = 0; c < g->b[l].cols; c++) 
-						MAT_AT(g->b[l], r, c) = MAT_AT(g->b[l], r, c) / n;
+				for (size_t _r = 0; _r < g->b[l].rows; _r++) 
+					for (size_t _c = 0; _c < g->b[l].cols; _c++) 
+						MAT_AT(g->b[l], _r, _c) = MAT_AT(g->b[l], _r, _c) / n;
 
 			}
 
@@ -252,9 +258,9 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 		mat_cpy( a_prev_clone, nn->a[l-1] );
 		for (size_t i=0; i<g->b[l].cols; i++) {
 				
-			for (size_t r = 0; r < a_prev_clone.rows; r++) 
-				for (size_t c = 0; c < a_prev_clone.cols; c++) 
-					MAT_AT(a_prev_clone, r, c) = MAT_AT(a_prev_clone, r, c) * MAT_AT(g->b[l], 0, i);
+			for (size_t _r = 0; _r < a_prev_clone.rows; _r++) 
+				for (size_t _c = 0; _c < a_prev_clone.cols; _c++) 
+					MAT_AT(a_prev_clone, _r, _c) = MAT_AT(a_prev_clone, _r, _c) * MAT_AT(g->b[l], 0, i);
 
 			// l means "for local neuron"
 			Mat dw_l = a_prev_clone;
@@ -266,9 +272,9 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 				mat_dot( sum_dw_l, ident_mat, dw_l );
 			}
 
-			for (size_t r = 0; r < sum_dw_l.rows; r++) 
-				for (size_t c = 0; c < sum_dw_l.cols; c++) 
-					MAT_AT(sum_dw_l, r, c) = MAT_AT(sum_dw_l, r, c) / n;
+			for (size_t _r = 0; _r < sum_dw_l.rows; _r++) 
+				for (size_t _c = 0; _c < sum_dw_l.cols; _c++) 
+					MAT_AT(sum_dw_l, _r, _c) = MAT_AT(sum_dw_l, _r, _c) / n;
 
 			Mat avg_dw_l = sum_dw_l;
 
