@@ -37,8 +37,6 @@ typedef struct {
 
 NN nn_alloc(size_t *arch, size_t size, size_t batch);
 NN *nn_forward(NN *nn);
-//float nn_cost(NN *nn, const Mat ti, const Mat to);
-//NN *nn_fdiff(NN* grad, NN *nn, float eps, const Mat ti, const Mat to);
 NN *nn_train(NN *nn, NN* grad, float lr);
 void nn_print(NN *nn, const char *name);
 void mat_sigmoid(Mat m);
@@ -64,8 +62,8 @@ NN nn_alloc(size_t *arch, size_t size, size_t batch) {
 	for (size_t i = 0; i < size; i++) {
 		nn.w[i] = mat_alloc( input_size, arch[i] );		
 		nn.b[i] = mat_alloc( 1, arch[i] ); 
-		nn.z[i] = mat_alloc( batch, arch[i] ); // for only single sample input
-		nn.a[i] = mat_alloc( batch, arch[i] ); // for only single sample input
+		nn.z[i] = mat_alloc( batch, arch[i] ); 
+		nn.a[i] = mat_alloc( batch, arch[i] );
 		input_size = arch[i]; 
 	}
 
@@ -108,37 +106,6 @@ float sigmoidf(float x) {
 	return expx / (1.0 + expx);
 }
 
-/*
-NN *nn_forward_depr(NN *nn) {
-	
-	NN_ASSERT( nn->im.rows == nn->om.rows );
-
-	MAT_ON_STACK(bufm, 32, 32);
-	bufm = mat_cpy(bufm, nn->im);	
-	for (size_t i=0; i < nn->size; i++) {
-		float tempf[bufm.rows * ( nn->w[i].cols )];
-		
-		Mat temp = {
-			.rows = bufm.rows,
-			.cols = nn->w[i].cols,
-			.stride = nn->w[i].cols,
-			.p = tempf
-		};
-		
-		temp = mat_dot(temp, bufm, nn->w[i]);
-
-		bufm.rows = temp.rows;
-		bufm.cols = temp.cols;
-
-		bufm = mat_brcst(bufm, temp, nn->b[i]);
-
-		mat_sigmoid(bufm);
-	}
-
-	nn->om = mat_cpy(nn->om, bufm);
-	return nn;
-}
-*/
 
 NN *nn_forward(NN *nn) {
 	
@@ -164,7 +131,6 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 #define delta ( g->a )
 
 	for (size_t l=nn->size-1; l > 0; l--) {
-		// calculate last bias gradient
 		MAT_ON_STACK( a_square, nn->a[l].rows, nn->a[l].cols );
 		mat_mul( a_square, nn->a[l], nn->a[l] );
 		Mat da_dz = mat_subtr( a_square, nn->a[l], a_square );	
@@ -201,63 +167,6 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 
 #undef delta
 }
-
-
-/*
-
-float nn_cost(NN *nn, const Mat ti, const Mat to) {
-	NN_ASSERT(ti.rows == to.rows);
-	
-	MAT_ON_STACK( out, to.rows, to.cols );
-	
-	NN_SETINPUT(nn, ti);
-	NN_SETOUTPUT(nn, out);
-	nn_forward(nn);
-
-	float sum_batch = 0;
-	for (size_t i=0; i < out.rows; i++) {
-		float sum_MSE_neuron = 0;
-		for (size_t j=0; j < out.cols; j++) {
-			float diff = MAT_AT(to, i, j) - MAT_AT(out, i, j);	
-			sum_MSE_neuron += diff * diff;	
-		}
-		sum_batch += sum_MSE_neuron / out.cols;
-	}
-
-	return (sum_batch /= out.rows);
-}
-
-
-NN *nn_fdiff(NN* grad, NN *nn, float eps, const Mat ti, const Mat to) {
-	NN_ASSERT( grad->size == nn->size );
-	float cost = nn_cost(nn, ti, to); 
-
-	for (size_t i=0; i<nn->size; i++) {
-		Mat *layer = nn->w + i;
-		Mat *grad_layer = grad->w + i;
-		for (size_t j=0; j < layer->rows; j++) {
-			for (size_t k=0; k < layer->cols; k++) {
-				MAT_AT(nn->w[i], j, k) += eps;	
-				float cost_eps = nn_cost(nn, ti, to);
-				MAT_AT(nn->w[i], j, k) -= eps;	
-
-				MAT_AT(grad->w[i], j, k) = (cost_eps - cost) / eps;	
-
-			}
-		}
-
-		for (size_t j=0; j < nn->b[i].cols; j++) {
-				MAT_AT(nn->b[i], 0, j) += eps;	
-				float cost_eps = nn_cost(nn, ti, to);
-				MAT_AT(nn->b[i], 0, j) -= eps;	
-
-				MAT_AT(grad->b[i], 0, j) = (cost_eps - cost) / eps;	
-		}
-	}
-
-	return grad;
-}
-*/
 
 NN *nn_train(NN *nn, NN* grad, float lr) {
 	for (size_t i=0; i<nn->size; i++) {

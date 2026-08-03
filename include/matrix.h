@@ -185,16 +185,6 @@ Mat mat_colmean(Mat, Mat);
 
 	}
 
-	Mat mat_avgcol(Mat src, Mat m) {
-		MAT_ASSERT( m.cols == src.cols );
-
-		MAT_ON_STACK( ident_mat, 1, m.rows );
-		mat_fill( ident_mat, 1 );
-		mat_dot( src, ident_mat, m );
-
-		return src;
-	}
-
 	Mat mat_sharrow(Mat m, size_t s) {
 
 		Mat row = { 
@@ -226,7 +216,6 @@ Mat mat_colmean(Mat, Mat);
 		return sm;
 	}
 
-	// completely useless function, TB-deleted
 	Mat mat_share(Mat src) {
 		Mat dst = {
 			.cols = src.cols, 
@@ -236,8 +225,6 @@ Mat mat_colmean(Mat, Mat);
 		};
 		return dst;
 	}
-
-
 
 	Mat mat_cpy(Mat dst, Mat src) {
 		MAT_ASSERT(dst.rows >= src.rows);
