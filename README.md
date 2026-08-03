@@ -1,7 +1,6 @@
 
 A tiny, single-header neural network framework in C. 
 - no dependencies, 
-- no batched backprop
 - no layer types (conv, attention, etc.)
 - no serialization
 - no GPU acceleration 
