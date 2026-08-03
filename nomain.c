@@ -39,14 +39,14 @@ int main(void) {
 #if 1
 	Mat x = mat_sharsub(mat_dataset, 0, 4, 0, 2);
 	Mat y = mat_sharcol(mat_dataset, 2); 
-	for (size_t epoch=0; epoch<100000; epoch++) {
+	for (size_t epoch=0; epoch<500; epoch++) {
 		mat_cpy(NN_INPUT(&nn), x);
 		nn_forward(&nn);
 		nn_backward(&nn, &g, y);
 		
-		nn_train(&nn, &g, 0.01);
+		nn_train(&nn, &g, 0.1);
 	}
-	NN_PRINT(&nn);
+	NN_PRINT(&g);
 
 	printf("TEST CASE");
 	mat_cpy(NN_INPUT(&nn), tm);

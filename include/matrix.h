@@ -27,6 +27,7 @@ Mat mat_share(Mat src);
 Mat mat_sharsub(Mat m, size_t ri, size_t rsize, size_t ci, size_t csize);
 Mat mat_brcst(Mat out, Mat x, Mat b);
 Mat mat_fill(Mat, float);
+Mat mat_colmean(Mat, Mat);
 
 #ifndef MAT_ASSERT
 	#define MAT_ASSERT assert
@@ -116,6 +117,17 @@ Mat mat_fill(Mat, float);
 		for (size_t r=0; r<out.rows; r++) 
 			for (size_t c=0; c<out.cols; c++) 
 				MAT_AT(out, r, c) = MAT_AT(m, c, r); 
+
+		return out;
+	}
+
+	Mat mat_colmean(Mat out, Mat m) {
+		MAT_ASSERT( out.cols == m.cols );
+
+		MAT_ON_STACK( mat_ident, 1, m.rows );
+		mat_dot( out, mat_ident, m );
+		for (size_t c=0; c<m.cols; c++) 
+			MAT_AT(m, 1, c) /= m.rows;
 
 		return out;
 	}

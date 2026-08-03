@@ -160,13 +160,14 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 
 	size_t last = nn->size-1;
 	size_t n = y.rows;
-
+	
+#define delta ( g->a )
 
 	for (size_t l=nn->size-1; l > 0; l--) {
 		// calculate last bias gradient
 		MAT_ON_STACK( a_square, nn->a[l].rows, nn->a[l].cols );
 		mat_mul( a_square, nn->a[l], nn->a[l] );
-		Mat da_dz = mat_subtr( a_square, nn->z[l], a_square );	
+		Mat da_dz = mat_subtr( a_square, nn->a[l], a_square );	
 		
 			if ( l == last ) {
 				MAT_ON_STACK( diff, y.rows, y.cols );
@@ -174,116 +175,31 @@ void nn_backward(NN *nn, NN *g, Mat y) {
 
 				for (size_t _r = 0; _r < diff.rows; _r++) 
 					for (size_t _c = 0; _c < diff.cols; _c++) 
-						MAT_AT(diff, _r, _c) = MAT_AT(diff, _r, _c) * 2;
+						MAT_AT(diff, _r, _c) *= 2;
 
 				Mat dC_da = diff;
 
-				Mat dC_db = mat_mul( dC_da, dC_da, da_dz );
-				// we should delete averaging over sample begin
-				MAT_ON_STACK( sum_dC_db, 1, dC_db.cols );
-
-				{
-					MAT_ON_STACK( ident_mat, 1, dC_db.rows );
-					mat_fill( ident_mat, 1 );
-					mat_dot( sum_dC_db, ident_mat, dC_db );
-				}
-
-				
-				for (size_t _r = 0; _r < sum_dC_db.rows; _r++) 
-					for (size_t _c = 0; _c < sum_dC_db.cols; _c++) 
-						MAT_AT(sum_dC_db, _r, _c) = MAT_AT(sum_dC_db, _r, _c) / n;
-
-				Mat avg_dC_db = sum_dC_db;
-
-				mat_cpy(g->b[l], avg_dC_db);
-				// end
+				mat_mul( delta[l], dC_da, da_dz );
 
 			} else {
-				mat_fill(g->b[l], 0);
-				for (size_t i=0; i < da_dz.rows; i++) {
-					Mat z_row = mat_sharrow(da_dz, i);
-					MAT_ON_STACK( w_T, nn->w[l+1].cols, nn->w[l+1].rows );
-					mat_transpose( w_T, nn->w[l+1] );
-
-					for (size_t r=0; r<w_T.rows; r++) 
-						mat_mul(mat_sharrow(w_T, r), z_row, mat_sharrow(w_T, r));
-					Mat dz_db = w_T;					
-
-					MAT_ON_STACK(sum_dz_db, 1, dz_db.cols);
-					{
-						MAT_ON_STACK( ident_mat, 1, dz_db.rows );
-						mat_fill( ident_mat, 1 );
-						mat_dot( sum_dz_db, ident_mat, dz_db );
-					}
-					
-					for (size_t _r = 0; _r < sum_dz_db.rows; _r++) 
-						for (size_t _c = 0; _c < sum_dz_db.cols; _c++) 
-							MAT_AT(sum_dz_db, _r, _c) = MAT_AT(sum_dz_db, _r, _c) / dz_db.rows;
-
-					Mat avg_dz_db = sum_dz_db;
-
-					MAT_ON_STACK( dC_db, g->b[l+1].cols, avg_dz_db.cols );
-					for (size_t c=0; c<g->b[l+1].cols; c++) {
-						MAT_ON_STACK( temp, 1, avg_dz_db.cols );
-						mat_cpy(temp, avg_dz_db);
-
-						for (size_t _r = 0; _r < temp.rows; _r++) 
-							for (size_t _c = 0; _c < temp.cols; _c++) 
-								MAT_AT(temp, _r, _c) = MAT_AT(temp, _r, _c) * MAT_AT(g->b[l+1], 0, c);
-
-						mat_cpy(mat_sharrow(dC_db, c), temp);
-					}
-					MAT_ON_STACK(sum_dC_db, 1, dC_db.cols);
-					{
-						MAT_ON_STACK( ident_mat, 1, dC_db.rows );
-						mat_fill( ident_mat, 1 );
-						mat_dot( sum_dC_db, ident_mat, dC_db );
-					}
-
-					for (size_t _r = 0; _r < sum_dC_db.rows; _r++) 
-						for (size_t _c = 0; _c < sum_dC_db.cols; _c++) 
-							MAT_AT(sum_dC_db, _r, _c) = MAT_AT(sum_dC_db, _r, _c) / g->b[l+1].cols;
-
-					Mat avg_dC_db = sum_dC_db;
-
-					mat_add( g->b[l], g->b[l], avg_dC_db );
-				}
-				
-				for (size_t _r = 0; _r < g->b[l].rows; _r++) 
-					for (size_t _c = 0; _c < g->b[l].cols; _c++) 
-						MAT_AT(g->b[l], _r, _c) = MAT_AT(g->b[l], _r, _c) / n;
-
+				MAT_ON_STACK( w_T, nn->w[l+1].cols, nn->w[l+1].rows );
+				mat_dot( delta[l], delta[l+1], mat_transpose( w_T, nn->w[l+1] ) );
+				mat_mul( delta[l], delta[l], da_dz ); 		
 			}
 
-		// calculate l weight gradient
-		MAT_ON_STACK( a_prev_clone, nn->a[l-1].rows, nn->a[l-1].cols );
-		mat_cpy( a_prev_clone, nn->a[l-1] );
-		for (size_t i=0; i<g->b[l].cols; i++) {
-				
-			for (size_t _r = 0; _r < a_prev_clone.rows; _r++) 
-				for (size_t _c = 0; _c < a_prev_clone.cols; _c++) 
-					MAT_AT(a_prev_clone, _r, _c) = MAT_AT(a_prev_clone, _r, _c) * MAT_AT(g->b[l], 0, i);
 
-			// l means "for local neuron"
-			Mat dw_l = a_prev_clone;
-			MAT_ON_STACK( sum_dw_l, 1, dw_l.cols );
-			{
-				MAT_ON_STACK( ident_mat, 1, dw_l.rows );
-				mat_fill( ident_mat, 1 );
+		g->b[l] = mat_colmean( g->b[l], delta[l] );
 
-				mat_dot( sum_dw_l, ident_mat, dw_l );
-			}
+		MAT_ON_STACK( a_T, nn->a[l-1].cols, nn->a[l-1].rows );
+		g->w[l] = mat_dot( g->w[l], mat_transpose( a_T, nn->a[l-1] ), delta[l] );
 
-			for (size_t _r = 0; _r < sum_dw_l.rows; _r++) 
-				for (size_t _c = 0; _c < sum_dw_l.cols; _c++) 
-					MAT_AT(sum_dw_l, _r, _c) = MAT_AT(sum_dw_l, _r, _c) / n;
-
-			Mat avg_dw_l = sum_dw_l;
-
-			for (size_t j=0; j < avg_dw_l.cols; j++) 
-				MAT_AT( g->w[l], j, i ) = MAT_AT( avg_dw_l, 0, j );
-		}	
+		for (size_t _r=0; _r<g->w[l].rows; _r++) 
+			for (size_t _c=0; _c<g->w[l].cols; _c++) 
+				MAT_AT(g->w[l], _r, _c) /= n;
+		
 	}
+
+#undef delta
 }
 
 
