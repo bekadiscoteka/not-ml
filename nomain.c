@@ -51,8 +51,6 @@ int main(void) {
 	NN_PRINT(&nn);
 
 	printf("TEST CASE");
-	mat_cpy(NN_INPUT(&nn), x);
-	nn_forward(&nn);
 	MAT_PRINT(NN_OUTPUT(&nn));
 
 	return 0;

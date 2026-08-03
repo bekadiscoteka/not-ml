@@ -128,7 +128,7 @@ Mat mat_colmean(Mat, Mat);
 		mat_fill(mat_ident, 1);
 		mat_dot( out, mat_ident, m );
 		for (size_t c=0; c<m.cols; c++) 
-			MAT_AT(m, 1, c) /= m.rows;
+			MAT_AT(out, 1, c) /= m.rows;
 
 		return out;
 	}
